@@ -27,7 +27,6 @@
             var numSharesRounded = Math.round(numShares)
             document.getElementById('numSharesToBuy').innerHTML = numSharesRounded
             document.getElementById('totalCost').innerHTML = "$" + Math.round((numSharesRounded * document.getElementById("stockPrice").value) * 100) / 100
-            alert("potential loss: " + sl * numSharesRounded)
         }
 
         function clearData() {
