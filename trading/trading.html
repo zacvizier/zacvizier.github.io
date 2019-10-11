@@ -13,9 +13,11 @@
     Rough stock price: <input type="number" id="stockPrice"><br>
     SL in dollars: <input type="number" id="SL"><br>
 
-    <button onclick="calculate()">Calculate</button><br><br><br>
+    <button onclick="calculate()">Calculate</button> <button onclick="clearData()">Clear</button> <br><br><br>
     Number of shares to buy: <div id="numSharesToBuy"></div>
     Total cost: <div id="totalCost"></div>
+
+    
 
     <script>
         function calculate() { 
@@ -25,6 +27,13 @@
             var numShares = (acctSize * risk)/sl
             document.getElementById('numSharesToBuy').innerHTML = numShares
             document.getElementById('totalCost').innerHTML = numShares * document.getElementById("stockPrice").value
+        }
+
+        function clearData() {
+          document.getElementById("acctSize").value = 30000
+          document.getElementById("risk").value = 0.15
+          document.getElementById("SL").value = null
+          document.getElementById("stockPrice").value = null
         }
 
     </script>
