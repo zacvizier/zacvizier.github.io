@@ -6,35 +6,32 @@
   </head>
   <body>
 
-    <h2>Add React in One Minute</h2>
-    <p>This page demonstrates using React with no build tooling.</p>
-    <p>React is loaded as a script tag.</p>
+    <h1>Position Size Calculator</h1>
 
-    <p>
-      This is the first comment.
-      <!-- We will put our React component inside this div. -->
-      <div class="like_button_container" data-commentid="1"></div>
-    </p>
+    Account Size: <input type="number" id="acctSize"><br>
+    % of Account risk: <input type="number" id="risk"><br><br><br>
+    Rough stock price: <input type="number" id="stockPrice"><br>
+    SL in dollars: <input type="number" id="SL"><br>
 
-    <p>
-      This is the second comment.
-      <!-- We will put our React component inside this div. -->
-      <div class="like_button_container" data-commentid="2"></div>
-    </p>
+    <button onclick="calculate()">Calculate</button><br><br><br>
+    Number of shares to buy: <div id="numSharesToBuy"></div>
+    Total cost: <div id="totalCost"></div>
 
-    <p>
-      This is the third comment.
-      <!-- We will put our React component inside this div. -->
-      <div class="like_button_container" data-commentid="3"></div>
-    </p>
-
-    <!-- Load React. -->
-    <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
-    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
-
+    
+   
     <!-- Load our React component. -->
-    <script src="like_button.js"></script>
+    <script src="trading.js"></script>
+    <script>
+        function calculate() { 
+            var acctSize=document.getElementById("acctSize").value
+            var risk = document.getElementById("risk").value/100
+            var sl = document.getElementById("SL").value
+            var numShares = (acctSize * risk)/sl
+            document.getElementById('numSharesToBuy').innerHTML = numShares
+            document.getElementById('totalCost').innerHTML = numShares * document.getElementById("stockPrice").value
+        }
+
+    </script>
 
   </body>
 </html>
