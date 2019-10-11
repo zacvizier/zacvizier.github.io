@@ -14,9 +14,8 @@
     SL in dollars: <input type="number" id="SL"><br>
 
     <button onclick="calculate()">Calculate</button> <button onclick="clearData()">Clear</button> <br><br><br>
-    Number of shares to buy: <div id="numSharesToBuy"></div>
-    Total cost: <div id="totalCost"></div>
-
+    Number of shares to buy: <div style="font-size: 20px; font-weight: bold;" id="numSharesToBuy"></div>
+    Total cost: <div style="font-size: 20px; font-weight: bold;" id="totalCost"></div>
     
 
     <script>
@@ -25,8 +24,10 @@
             var risk = document.getElementById("risk").value/100
             var sl = document.getElementById("SL").value
             var numShares = (acctSize * risk)/sl
-            document.getElementById('numSharesToBuy').innerHTML = numShares
-            document.getElementById('totalCost').innerHTML = numShares * document.getElementById("stockPrice").value
+            var numSharesRounded = Math.round(numShares)
+            document.getElementById('numSharesToBuy').innerHTML = numSharesRounded
+            document.getElementById('totalCost').innerHTML = "$" + Math.round((numSharesRounded * document.getElementById("stockPrice").value) * 100) / 100
+            alert("potential loss: " + sl * numSharesRounded)
         }
 
         function clearData() {
