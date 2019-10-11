@@ -8,8 +8,8 @@
 
     <h1>Position Size Calculator</h1>
 
-    Account Size: <input type="number" id="acctSize"><br>
-    % of Account risk: <input type="number" id="risk"><br><br><br>
+    Account Size: <input type="number" id="acctSize" value=30000><br>
+    % of Account risk: <input type="number" id="risk" value=0.15><br><br><br>
     Rough stock price: <input type="number" id="stockPrice"><br>
     SL in dollars: <input type="number" id="SL"><br>
 
@@ -17,10 +17,6 @@
     Number of shares to buy: <div id="numSharesToBuy"></div>
     Total cost: <div id="totalCost"></div>
 
-    
-   
-    <!-- Load our React component. -->
-    <script src="trading.js"></script>
     <script>
         function calculate() { 
             var acctSize=document.getElementById("acctSize").value
