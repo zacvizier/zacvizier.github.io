@@ -16,8 +16,8 @@
     <button onclick="calculate()">Calculate</button> <button onclick="clearData()">Clear</button> <br><br><br>
     Number of shares to buy: <div style="font-size: 20px; font-weight: bold;" id="numSharesToBuy"></div>
     Total cost: <div style="font-size: 20px; font-weight: bold;" id="totalCost"></div>
-    
 
+    
     <script>
         function calculate() { 
             var acctSize=document.getElementById("acctSize").value
@@ -34,6 +34,9 @@
           document.getElementById("risk").value = 0.15
           document.getElementById("SL").value = null
           document.getElementById("stockPrice").value = null
+
+          document.getElementById('numSharesToBuy').innerHTML = null
+          document.getElementById('totalCost').innerHTML = null
         }
 
     </script>
