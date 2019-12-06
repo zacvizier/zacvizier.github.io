@@ -6,8 +6,14 @@ import dash_html_components as html
 import pandas as pd
 import decimal
 import warnings
-#import numpy as np
+import time
+
+# I was getting an error as a warning that was messing up my app. This suppresses it.
 warnings.simplefilter(action='ignore', category=FutureWarning)
+
+# Import the Stats dict from the app_stats file
+from app_stats import stats
+
 
 # Load data from csv
 df1 = pd.read_csv('https://docs.google.com/spreadsheets/d/1VYoIhAj2MyZIWr72o-Ix2Rd1mHN_NVC5tTF6oUYNPUU/export?format=csv')
@@ -17,60 +23,11 @@ df = df1[(df1['Id'] > 0)]
 # Store a copy of this for when we reset the filters
 df_og = df
 
-# Create empty Stats array
-# -- Stats includes details for every column in the BT Log
-stats = [
-    {
-        "name": "env",
-        "val": "Env",
-        "checkedOptions": [{'dataVal': 'R', 'val': 'R'}, {'dataVal': 'T', 'val': 'T'}, {'dataVal': 'PB', 'val': 'PB'}],
-        "data": [
-            {"checked": 'R', "w": 0, "l": 0},
-            {"checked": 'T', "w": 0, "l": 0},
-            {"checked": 'PB', "w": 0, "l": 0}]
-    },
-    {
-        "name": "strmv",
-        "val": "StrMv",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
-    {
-        "name": "imp sr",
-        "val": "Imp SR",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
-    {
-        "name": "tr sr",
-        "val": "Tr SR",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
-    {
-        "name": "mjr sr",
-        "val": "Mjr SR",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
-    {
-        "name": "hllh",
-        "val": "HLLH",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    }
-    
-]
+
+
+
+
+
 
 # Create a copy of the Stats *empty* array, in case we need it in the future
 baseStats = stats
@@ -104,17 +61,13 @@ for data in stats:
     name = data['name'] # We will also need the name and append it, so we know which column it is
     val = data['val']
     checkedOptions = data['checkedOptions']
-    #optionsElement
     optionsArr.append({"data":data['checkedOptions'], "name": name, "val": val})
-    #optionsArr.append({'naname)
-    #optionsArr.append(val)
+
       
     for row in data_row: # Iterate through the data_rows (child object) we just got
         row['name'] = name  # Add the 'name' variable we just got to a new 'name' key value in 
         row['val'] = val
         rows.append(row) # Append the row, now with the "name" value, to the rows array we created earlier
-
-#print optionsArr
 
 # Iterate through our new rows array and fill out our filterValues array
 for data in rows:
@@ -127,25 +80,43 @@ for data in rows:
 d = pd.DataFrame(rows) 
 d = d[['val','name', 'checked', 'w', 'l']] # Now we can easily re-order the columns to our liking
 
-#print d
+
 
 # We will save a fresh copy of our dataframe in case we need it later
 d_fresh = d.copy()
 
 
-# This is where we fill out the array of stats based on whether the cell is checked or not.
-# This is a function to do said task.
+'''
+    Description
+    Purpose: Fill out the Stats dataframe, which is the main data displayed to the user
+    Inputs: dataStats - fresh stats series, all zeroed out. Use d_fresh.copy() to obtain a fresh copy
+            df - BT data set. Does not have to be entire data, can be filtered set
+            optionsArr - the function iterates through every item in the BT list, and cycles through every option for each checkbox
+                this input is a dictionary containing the name of each column and a list of all possible values.
+                use optionsArr by default
+    Output: Filtered dataframe, columns ordered properly, with totans and win % and loss %
+'''
 def fill_stats_arr(dataStats, df, optionsArr):
-    for index, row in df.iterrows(): # Iterate through every item in the BT Data
-        for rowStats in optionsArr: # For each item in the BT data, iterate through every possible checkbox
-            for i in rowStats['data']: # Iterate through every option per checkbox (T or F, sometimes other stuff like R/PB/T)
+    start = time.time()
+    for rowStats in optionsArr: # For each item in the BT data, iterate through every possible checkbox
+        nameTrueVector = (dataStats['name']==rowStats['name'])
+        for i in rowStats['data']: # Iterate through every option per checkbox (T or F, sometimes other stuff like R/PB/T)
+            condVector = nameTrueVector & (dataStats['checked']==i['val'])
+            position = dataStats[condVector].index[0]
+            for index, row in df.iterrows(): # Iterate through every item in the BT Data
                 if row[rowStats['val']] == i['dataVal']: # If that option matches the BT data...
                     if row['Res'] == 'W' and row['Rec'] == True: # Depending on whether it was a Win or Loss, increment
-                        dataStats.at[dataStats[(dataStats['name']==rowStats['name']) & (dataStats['checked']==i['val'])].index[0], 'w'] += 1
+                        dataStats.iat[position, 3] += 1
                     else:
-                        dataStats.at[dataStats[(dataStats['name']==rowStats['name']) & (dataStats['checked']==i['val'])].index[0], 'l'] += 1
+                        dataStats.iat[position, 4] += 1
 
-        
+                    # if row['Res'] == 'W' and row['Rec'] == True: # Depending on whether it was a Win or Loss, increment
+                    #     dataStats.at[dataStats[(dataStats['name']==rowStats['name']) & (dataStats['checked']==i['val'])].index[0], 'w'] += 1
+                    # else:
+                    #     dataStats.at[dataStats[(dataStats['name']==rowStats['name']) & (dataStats['checked']==i['val'])].index[0], 'l'] += 1
+    end = time.time()
+    print "total time"
+    print (end-start)
     # Set a new column 't' (total) to zero for every row
     dataStats['t']=0
     dataStats['wp']="..." # We will calculate the wp (win percent) and lp (loss percent) columns
@@ -167,11 +138,11 @@ def fill_stats_arr(dataStats, df, optionsArr):
     # Re-order the columns to our liking
     dataStats = dataStats[['val', 'name', 'checked', 'w','wp', 'l','lp','t']]
     return dataStats
-    #print(dataStats)
 
 # Call our function
 d = fill_stats_arr(d, df, optionsArr)
 
+# Calculate win percent with current data (/filters)
 def calculateWinPTotal(data):
     numWins = 0
     for index, row in data.iterrows():
@@ -179,8 +150,6 @@ def calculateWinPTotal(data):
             numWins += 1
         
     decimal.getcontext().prec = 4 # 4 digits of precision (INCLUDING digits before the decimal
-
-
     return round(float (numWins) / float(len(data.index)),3)*100
 
 initial_wp = calculateWinPTotal(df)
@@ -201,7 +170,8 @@ app.layout = html.Div([
         dcc.Dropdown(
             id='playSelect',
             options=plays,
-            multi=False
+            multi=False,
+            value=2.2
         )
     ],style={'width': '10%', 'display': 'inline-block'}),
     html.Div(id='text-stats'),
@@ -246,7 +216,11 @@ def update_table(search_value, play_val):
 
     if play_val is not None:
         dataCopy = dataCopy[dataCopy['Play'] == play_val]
-
+    
+    # if play_val is not None:
+    #     for index, row in dataCopy.iterrows():
+    #         if row['Play'] == play_val:
+    #           meow = 0
 
     # Store the values from the multi-dropdown in a variable. No reason.
     valArr = search_value
@@ -259,8 +233,6 @@ def update_table(search_value, play_val):
         values = []
         for val in valArr:
             values.append({"val": val[:val.find(';')], "checked": val[val.find(';')+1:]})
-        #print values
-
         
         
         # Iterate through every multi-select value, get the value for "Checked" and filter the list based on it
@@ -277,32 +249,13 @@ def update_table(search_value, play_val):
                 dataCopy = dataCopy[dataCopy[i['val']]=="T"]
 
 
+    # Now we send this new data to the fill_stats_arr function to give us a new dataframe which we will pass to the output
     newStats = fill_stats_arr(d_fresh_copy, dataCopy, optionsArr)
 
-    print newStats
-    wp = calculateWinPTotal(dataCopy)    
+    #print newStats
+    wp = calculateWinPTotal(dataCopy)
 
     return newStats.to_dict('records'), "Win %: " + str(wp)
-
-    ## TODO - left off here
-    # add more columns
-
-    # also, the opposite row in the dataframe is all 0's. that's fine, technically that's correct behavior, 
-    # but maybe i should highlight it so i know to ignore it? 
-    #    as if all 0's isn't obvious enough
-    # one thing is for sure, i should highlight what i AM filtering
-    # also, i might have an issue with stuff that don't have a 'y' or 'n' "checked" value. such as Env. anything that isn't true or false needs
-    #   to be handled separately.
-    # another potential tricky thing will be handling the play #
-
-    # last question - how fast will this be with more columns? Will it be faster than power bi and can i improve the performance/efficiency.
-
-    #maybe filter the rows with all 0's to the bottom if possible, so they don't take up screen space
-
-    # wins should not be based on Res='W', it should be based on Rec = TRUE
-    # or maybe i should update my stats objects to include the other various options
-
-
 
 
 
