@@ -1,0 +1,125 @@
+# This is where we fill out the array of stats based on whether the cell is checked or not.
+# This is a function to do said task.
+def fill_stats_arr(d, df):
+    for index, row in df.iterrows():
+
+        # StrMv
+        if row['StrMv'] == True:
+            if row['Res'] == 'W':
+                d.at[d[(d['name']=='strmv') & (d['checked']=='y')].index[0], 'w'] += 1
+            else:
+                d.at[d[(d['name']=='strmv') & (d['checked']=='y')].index[0], 'l'] += 1
+        else:
+            if row['Res'] == 'W':
+                d.at[d[(d['name']=='strmv') & (d['checked']=='n')].index[0], 'w'] += 1
+            else:
+                d.at[d[(d['name']=='strmv') & (d['checked']=='n')].index[0], 'l'] += 1
+
+        # Imp SR
+        if row['Imp SR'] == True:
+            if row['Res'] == 'W':
+                d.at[d[(d['name']=='imp sr') & (d['checked']=='y')].index[0], 'w'] += 1
+            else:
+                d.at[d[(d['name']=='imp sr') & (d['checked']=='y')].index[0], 'l'] += 1
+        else:
+            if row['Res'] == 'W':
+                d.at[d[(d['name']=='imp sr') & (d['checked']=='n')].index[0], 'w'] += 1
+            else:
+                d.at[d[(d['name']=='imp sr') & (d['checked']=='n')].index[0], 'l'] += 1
+
+        # HLLH
+        if row['HLLH'] == True:
+            if row['Res'] == 'W':
+                d.at[d[(d['name']=='hllh') & (d['checked']=='y')].index[0], 'w'] += 1
+            else:
+                d.at[d[(d['name']=='hllh') & (d['checked']=='y')].index[0], 'l'] += 1
+        else:
+            if row['Res'] == 'W':
+                d.at[d[(d['name']=='hllh') & (d['checked']=='n')].index[0], 'w'] += 1
+            else:
+                d.at[d[(d['name']=='hllh') & (d['checked']=='n')].index[0], 'l'] += 1
+
+    # Set a new column 't' (total) to zero for every row
+    d['t']=0
+    d['wp']="..." # We will calculate the wp (win percent) and lp (loss percent) columns
+    d['lp']="..."
+    decimal.getcontext().prec = 4 # 4 digits of precision (INCLUDING digits before the decimal
+
+
+    # Calculate and add total, use that to calculate WP and LP and update the dataframe
+    for index, row in d.iterrows():
+        total = row['w'] + row['l']
+        d.at[index, 't'] = total
+        d.at[index, 'wp'] = decimal.Decimal(row['w']) / decimal.Decimal(total)*100
+        d.at[index, 'lp'] = decimal.Decimal(row['l']) / decimal.Decimal(total)*100
+
+    # Re-order the columns to our liking
+    d = d[['name', 'checked', 'w','wp', 'l','lp','t']]
+    #return d
+    print(d)
+
+# Call our function
+fill_stats_arr(d, df)
+
+
+
+
+----
+updated 12/5/ 7:31
+
+
+        # # Env
+        # if row['Env'] == 'R':
+        #     if row['Res'] == 'W' and row['Rec'] == True:
+        #         dataStats.at[dataStats[(dataStats['name']=='env') & (dataStats['checked']=='R')].index[0], 'w'] += 1
+        #     else:
+        #         dataStats.at[dataStats[(dataStats['name']=='env') & (dataStats['checked']=='R')].index[0], 'l'] += 1
+        # elif row['Env'] == 'T':
+        #     if row['Res'] == 'W' and row['Rec'] == True:
+        #         dataStats.at[dataStats[(dataStats['name']=='env') & (dataStats['checked']=='T')].index[0], 'w'] += 1
+        #     else:
+        #         dataStats.at[dataStats[(dataStats['name']=='env') & (dataStats['checked']=='T')].index[0], 'l'] += 1
+        # elif row['Env'] == 'PB':
+        #     if row['Res'] == 'W' and row['Rec'] == True:
+        #         dataStats.at[dataStats[(dataStats['name']=='env') & (dataStats['checked']=='PB')].index[0], 'w'] += 1
+        #     else:
+        #         dataStats.at[dataStats[(dataStats['name']=='env') & (dataStats['checked']=='PB')].index[0], 'l'] += 1
+
+
+
+        # # StrMv
+        # if row['StrMv'] == True:
+        #     if row['Res'] == 'W' and row['Rec'] == True:
+        #         dataStats.at[dataStats[(dataStats['name']=='strmv') & (dataStats['checked']=='y')].index[0], 'w'] += 1
+        #     else:
+        #         dataStats.at[dataStats[(dataStats['name']=='strmv') & (dataStats['checked']=='y')].index[0], 'l'] += 1
+        # else:
+        #     if row['Res'] == 'W' and row['Rec'] == True:
+        #         dataStats.at[dataStats[(dataStats['name']=='strmv') & (dataStats['checked']=='n')].index[0], 'w'] += 1
+        #     else:
+        #         dataStats.at[dataStats[(dataStats['name']=='strmv') & (dataStats['checked']=='n')].index[0], 'l'] += 1
+
+        # # Imp SR
+        # if row['Imp SR'] == True:
+        #     if row['Res'] == 'W' and row['Rec'] == True:
+        #         dataStats.at[dataStats[(dataStats['name']=='imp sr') & (dataStats['checked']=='y')].index[0], 'w'] += 1
+        #     else:
+        #         dataStats.at[dataStats[(dataStats['name']=='imp sr') & (dataStats['checked']=='y')].index[0], 'l'] += 1
+        # else:
+        #     if row['Res'] == 'W' and row['Rec'] == True:
+        #         dataStats.at[dataStats[(dataStats['name']=='imp sr') & (dataStats['checked']=='n')].index[0], 'w'] += 1
+        #     else:
+        #         dataStats.at[dataStats[(dataStats['name']=='imp sr') & (dataStats['checked']=='n')].index[0], 'l'] += 1
+
+
+        # # HLLH
+        # if row['HLLH'] == True:
+        #     if row['Res'] == 'W' and row['Rec'] == True:
+        #         dataStats.at[dataStats[(dataStats['name']=='hllh') & (dataStats['checked']=='y')].index[0], 'w'] += 1
+        #     else:
+        #         dataStats.at[dataStats[(dataStats['name']=='hllh') & (dataStats['checked']=='y')].index[0], 'l'] += 1
+        # else:
+        #     if row['Res'] == 'W' and row['Rec'] == True:
+        #         dataStats.at[dataStats[(dataStats['name']=='hllh') & (dataStats['checked']=='n')].index[0], 'w'] += 1
+        #     else:
+        #         dataStats.at[dataStats[(dataStats['name']=='hllh') & (dataStats['checked']=='n')].index[0], 'l'] += 1

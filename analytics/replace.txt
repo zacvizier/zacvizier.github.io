@@ -1,0 +1,11 @@
+# StrMv
+        if row['StrMv'] == True:
+            if row['Res'] == 'W':
+                dataStats.at[dataStats[(dataStats['name']=='strmv') & (dataStats['checked']=='y')].index[0], 'w'] += 1
+            else:
+                dataStats.at[dataStats[(dataStats['name']=='strmv') & (dataStats['checked']=='y')].index[0], 'l'] += 1
+        else:
+            if row['Res'] == 'W':
+                dataStats.at[dataStats[(dataStats['name']=='strmv') & (dataStats['checked']=='n')].index[0], 'w'] += 1
+            else:
+                dataStats.at[dataStats[(dataStats['name']=='strmv') & (dataStats['checked']=='n')].index[0], 'l'] += 1
