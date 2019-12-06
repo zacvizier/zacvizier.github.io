@@ -150,9 +150,9 @@ def calculateWinPTotal(data):
             numWins += 1
         
     decimal.getcontext().prec = 4 # 4 digits of precision (INCLUDING digits before the decimal
-    return round(float (numWins) / float(len(data.index)),3)*100
+    return {"numWins": numWins,"wp": round(float (numWins) / float(len(data.index)),3)*100}
 
-initial_wp = calculateWinPTotal(df)
+initial_wp = calculateWinPTotal(df)["wp"]
 
 
 
@@ -216,11 +216,6 @@ def update_table(search_value, play_val):
 
     if play_val is not None:
         dataCopy = dataCopy[dataCopy['Play'] == play_val]
-    
-    # if play_val is not None:
-    #     for index, row in dataCopy.iterrows():
-    #         if row['Play'] == play_val:
-    #           meow = 0
 
     # Store the values from the multi-dropdown in a variable. No reason.
     valArr = search_value
@@ -253,9 +248,13 @@ def update_table(search_value, play_val):
     newStats = fill_stats_arr(d_fresh_copy, dataCopy, optionsArr)
 
     #print newStats
-    wp = calculateWinPTotal(dataCopy)
+    wpTotal=calculateWinPTotal(dataCopy)
+    wp = wpTotal["wp"]
+    numWins = wpTotal["numWins"]
+    total = len(dataCopy.index)
 
-    return newStats.to_dict('records'), "Win %: " + str(wp)
+
+    return newStats.to_dict('records'), "Win %: " + str(wp) + " --- NumWins: " + str(numWins) + " --- Total: " + str(total)
 
 
 
