@@ -8,6 +8,8 @@ import decimal
 import warnings
 import time
 
+import textwrap
+
 # I was getting an error as a warning that was messing up my app. This suppresses it.
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -22,11 +24,6 @@ df = df1[(df1['Id'] > 0)]
 
 # Store a copy of this for when we reset the filters
 df_og = df
-
-
-
-
-
 
 
 # Create a copy of the Stats *empty* array, in case we need it in the future
@@ -44,10 +41,23 @@ plays = [
     {'label': '7.3', 'value': 7.3},
     ]
 
+times = [6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5]
+
+timeStats = []
+
+for i in times:
+    timeStats += [{'val': i, 'w': 0, 'l': 0}]
+
+timeStatsDF = pd.DataFrame(timeStats) 
+timeStatsDF = timeStatsDF[['val', 'w', 'l']]
+timeStatsBackup = timeStatsDF.copy()
+
+
 # Initialize rows, which will be the array that will eventually
 #    become the table that we will be looking at
 rows = []
 optionsArr = []
+
 # filterValues will be the values that will be populated in the multi-select field
 #    which is used to filter
 filterValues = []
@@ -81,11 +91,46 @@ d = pd.DataFrame(rows)
 d = d[['val','name', 'checked', 'w', 'l']] # Now we can easily re-order the columns to our liking
 
 
-
 # We will save a fresh copy of our dataframe in case we need it later
 d_fresh = d.copy()
 
 
+##############################################################
+################## Time Stats Array Funct ####################
+##############################################################
+def fill_time_arr(timeStatsDF, df):
+    for index, row in df.iterrows():
+        if row['Res'] == 'W' and row['Rec'] == True:
+            timeStatsDF.at[timeStatsDF[timeStatsDF['val']==row['Time']].index[0], 'w'] += 1
+        else:
+            timeStatsDF.at[timeStatsDF[timeStatsDF['val']==row['Time']].index[0], 'l'] += 1
+
+    timeStatsDF['t']=0
+    timeStatsDF['wp']="..." # We will calculate the wp (win percent) and lp (loss percent) columns
+    timeStatsDF['lp']="..."
+    decimal.getcontext().prec = 4 # 4 digits of precision (INCLUDING digits before the decimal
+
+
+    # Calculate and add total, use that to calculate WP and LP and update the dataframe
+    for index, row in timeStatsDF.iterrows():
+        total = row['w'] + row['l']
+        if total != 0:
+            timeStatsDF.at[index, 't'] = total
+            timeStatsDF.at[index, 'wp'] = decimal.Decimal(row['w']) / decimal.Decimal(total)*100
+            timeStatsDF.at[index, 'lp'] = decimal.Decimal(row['l']) / decimal.Decimal(total)*100
+        else:
+            timeStatsDF.at[index, 't'] = 0
+            timeStatsDF.at[index, 'wp'] = 0
+            timeStatsDF.at[index, 'lp'] = 0
+
+    # Re-order the columns to our liking
+    timeStatsDF = timeStatsDF[['val','w','wp', 'l','lp','t']]
+    return timeStatsDF
+
+
+##############################################################
+################### Stats Array Funct ########################
+##############################################################
 '''
     Description
     Purpose: Fill out the Stats dataframe, which is the main data displayed to the user
@@ -110,13 +155,11 @@ def fill_stats_arr(dataStats, df, optionsArr):
                     else:
                         dataStats.iat[position, 4] += 1
 
-                    # if row['Res'] == 'W' and row['Rec'] == True: # Depending on whether it was a Win or Loss, increment
-                    #     dataStats.at[dataStats[(dataStats['name']==rowStats['name']) & (dataStats['checked']==i['val'])].index[0], 'w'] += 1
-                    # else:
-                    #     dataStats.at[dataStats[(dataStats['name']==rowStats['name']) & (dataStats['checked']==i['val'])].index[0], 'l'] += 1
     end = time.time()
     print "total time"
     print (end-start)
+
+
     # Set a new column 't' (total) to zero for every row
     dataStats['t']=0
     dataStats['wp']="..." # We will calculate the wp (win percent) and lp (loss percent) columns
@@ -136,12 +179,13 @@ def fill_stats_arr(dataStats, df, optionsArr):
             dataStats.at[index, 'wp'] = 0
             dataStats.at[index, 'lp'] = 0
     # Re-order the columns to our liking
-    dataStats = dataStats[['val', 'name', 'checked', 'w','wp', 'l','lp','t']]
+    dataStats = dataStats[[ 'name', 'val','checked', 'w','wp', 'l','lp','t']]
     return dataStats
 
-# Call our function
-d = fill_stats_arr(d, df, optionsArr)
 
+#############################################################
+############### Calculate Wins/Total/Win% ###################
+#############################################################
 # Calculate win percent with current data (/filters)
 def calculateWinPTotal(data):
     numWins = 0
@@ -154,8 +198,14 @@ def calculateWinPTotal(data):
 
 initial_wp = calculateWinPTotal(df)["wp"]
 
+############## Call our functions ####################
+d = fill_stats_arr(d, df, optionsArr)
+timeStatsDF = fill_time_arr(timeStatsDF, df)
 
 
+###########################################################
+###################### Main Layout ########################
+###########################################################
 
 app = dash.Dash(__name__)
 app.layout = html.Div([
@@ -163,7 +213,8 @@ app.layout = html.Div([
         dcc.Dropdown(
             id='filterSelect',
             options=filterValues,
-            multi=True
+            multi=True,
+            value=[]
         )
     ],style={'width': '40%', 'display': 'inline-block'}),
     html.Div([
@@ -172,35 +223,96 @@ app.layout = html.Div([
             options=plays,
             multi=False,
             value=2.2
-        )
+        ),
+    ],style={'width': '10%', 'display': 'inline-block'}),
+    html.Div([
+        html.Button('Reset Filters', id='reset-button', style={
+            "box-shadow":"inset 0px 1px 0px 0px #dcecfb",
+            "background":"linear-gradient(to bottom, #bddbfa 5%, #80b5ea 100%)",
+            "background-color":"#bddbfa",
+            "border-radius":"6px",
+            "border":"1px solid #84bbf3",
+            "display":"inline-block",
+            "cursor":"pointer",
+            "color":"#ffffff",
+            "font-family":"Arial",
+            "font-size":"15px",
+            "font-weight":"bold",
+            "padding":"6px 24px",
+            "text-decoration":"none",
+            "text-shadow":"0px 1px 0px #528ecc",
+            'position': 'relative',
+            'margin-left': '10px',
+            'bottom': '13px',
+            'height': '35px',
+        }),
     ],style={'width': '10%', 'display': 'inline-block'}),
     html.Div(id='text-stats'),
-    dash_table.DataTable(
-        id='datatable-interactivity',
-        columns=[
-            {"name": i, "id": i, "deletable": False, "selectable": False} for i in d.columns
-        ],
-        data=d.to_dict('records'),
-        column_selectable="multi",
-        #selected_columns=[],
-        #selected_rows=[],
-        sort_action='native',
-        page_action="native",
-        page_current= 0,
-        page_size= 100,
-        #filter_action="native"
-        style_cell_conditional=[
-            {
-            'if': {'column_id': c},
-            'display': 'none'
-            } for c in ['val']
+    # html.Div([
+    #     html.Div('Loading...')
+    # ], id='loading', style={'background-color': 'red'}),
+    html.Div([
+        dash_table.DataTable(
+            id='datatable-interactivity',
+            columns=[
+                {"name": i, "id": i, "deletable": False, "selectable": False} for i in d.columns
             ],
-    )
+            data=d.to_dict('records'),
+            column_selectable="multi",
+            #selected_columns=[],
+            #selected_rows=[],
+            sort_action='native',
+            page_action="native",
+            page_current= 0,
+            page_size= 100,
+            filter_action="native",
+            style_cell_conditional=[
+                {
+                    'if': {'column_id': c},
+                    'width': '10%'
+                } for c in d.columns
+            ], #+ [{'if': {'column_id': c}, 'background-color': 'green'} for c in ['wp']], #NOTE - this works. you can add arrays
+            #style_cell_conditional=[],
+            # style_data_conditional=[
+            #     {
+            #         'if': {'column_id': c},
+            #         'background-color': '#eafce3'
+            #     } for c in ['wp']
+            # ],
+            style_data_conditional=[]
+        )
+    ],id='table-div',style={'width': '48%', 'display': 'inline-block'}),
+    html.Div([
+        dash_table.DataTable(
+            id='datatable-time',
+            columns=[
+                {"name": i, "id": i, "deletable": False, "selectable": False} for i in timeStatsDF.columns
+            ],
+            data=timeStatsDF.to_dict('records'),
+            column_selectable="multi",
+            sort_action='native',
+            page_action="native",
+            page_current= 0,
+            page_size= 100,
+            style_cell_conditional=[
+                {
+                    'if': {'column_id': c},
+                    'width': '10%'
+                } for c in timeStatsDF.columns
+            ],
+            style_data_conditional=[]
+        )
+    ],id='time-div',style={'width': '48%','position': 'relative', 'left': '3%', 'display': 'inline-block'}),
+    html.Div(id='placeholder1'),
 ])
 
 
+#############################################################
+################### Main App Callbacks ######################
+#############################################################
 @app.callback(
     [dash.dependencies.Output("datatable-interactivity", "data"),
+    dash.dependencies.Output("datatable-time", "data"),
     dash.dependencies.Output("text-stats", 'children')],
     [dash.dependencies.Input("filterSelect", "value"),
     dash.dependencies.Input("playSelect", "value")]
@@ -209,10 +321,14 @@ def update_table(search_value, play_val):
     global df #Data (actual backtest data)
     global d_fresh #Stats
     global optionsArr # Array of options needed to update stats
+    global timeStatsBackup # Zeroed out timeStatsDF
+    
 
     # Make a copy of the ORIGINAL data
     d_fresh_copy = d_fresh.copy()
     dataCopy = df.copy()
+    timeCopy = timeStatsBackup.copy()
+
 
     if play_val is not None:
         dataCopy = dataCopy[dataCopy['Play'] == play_val]
@@ -244,20 +360,115 @@ def update_table(search_value, play_val):
                 dataCopy = dataCopy[dataCopy[i['val']]=="T"]
 
 
-    # Now we send this new data to the fill_stats_arr function to give us a new dataframe which we will pass to the output
+    # Now we send this new data to the stats update functions.
+    # Stats DF must be fresh copy
     newStats = fill_stats_arr(d_fresh_copy, dataCopy, optionsArr)
+    timeStatsNew = fill_time_arr(timeCopy, dataCopy)
 
-    #print newStats
+    # Calculate WP and totals which we will send to the div
     wpTotal=calculateWinPTotal(dataCopy)
     wp = wpTotal["wp"]
     numWins = wpTotal["numWins"]
     total = len(dataCopy.index)
 
+    return newStats.to_dict('records'), timeStatsNew.to_dict('records'), "Win %: " + str(wp) + " --- NumWins: " + str(numWins) + " --- Total: " + str(total)
 
-    return newStats.to_dict('records'), "Win %: " + str(wp) + " --- NumWins: " + str(numWins) + " --- Total: " + str(total)
+
+
+################# Reset Filters button #################
+@app.callback(
+    dash.dependencies.Output("filterSelect", 'value'),
+    [dash.dependencies.Input('reset-button', 'n_clicks')]
+)
+def reset_filter(n_clicks):
+    return []
+
+
+#############################################################
+############ Main Table Cell Click Callback #################
+#############################################################
+@app.callback(
+    Output("datatable-interactivity", "style_data_conditional"),
+    [Input('datatable-interactivity', 'active_cell'),
+    Input("datatable-interactivity", "data")])
+def highlight_row(active_cell,data):
+    wpColors = []
+    for row in data:
+        if row[u'wp'] > 57.5:
+            wpColors.append('#e2ffd1')
+        elif row[u'wp'] > 52:
+            wpColors.append('#ffd191')
+        else:
+            wpColors.append('#ff725c')
+
+        
+    row_indices = list(range(0,len(data), 1))
+    if active_cell is None:
+        rowUpdate = []
+    else:
+        rowUpdate = [{'if': {'row_index': active_cell['row']},'backgroundColor': 'pink'}]
+        if active_cell['row'] in row_indices: 
+            row_indices.remove(active_cell['row'])
+
+
+    altColor =[{
+        'if': {'row_index': 'odd', 'column_id': c},
+        'backgroundColor': 'rgb(248, 248, 248)'
+    } for c in ['val', 'w', 'l', 'lp', 't']]
+    wpColor = [{
+        'if': {'row_index': r, 'column_id': 'wp'},
+        'backgroundColor': wpColors[r]
+    } for r in range(0,len(data), 1)]
+
+    fullStyle = altColor + rowUpdate + wpColor
+    return fullStyle
+
+
+
+
+############## Time styles ################
+@app.callback(
+    Output("datatable-time", "style_data_conditional"),
+    [Input('datatable-time', 'active_cell'),
+    Input("datatable-time", "data")])
+def highlight_row(active_cell, data):
+    wpColors = []
+    for row in data:
+        if row[u'wp'] > 57.5:
+            wpColors.append('#e2ffd1')
+        elif row[u'wp'] > 52:
+            wpColors.append('#ffd191')
+        else:
+            wpColors.append('#ff725c')
+
+        
+    row_indices = list(range(0,len(data), 1))
+    if active_cell is None:
+        rowUpdate = []
+    else:
+        rowUpdate = [{'if': {'row_index': active_cell['row']},'backgroundColor': 'pink'}]
+        if active_cell['row'] in row_indices: 
+            row_indices.remove(active_cell['row'])
+
+
+    altColor =[{
+        'if': {'row_index': 'odd', 'column_id': c},
+        'backgroundColor': 'rgb(248, 248, 248)'
+    } for c in ['val', 'w', 'l', 'lp', 't']]
+    wpColor = [{
+        'if': {'row_index': r, 'column_id': 'wp'},
+        'backgroundColor': wpColors[r]
+    } for r in range(0,len(data), 1)]
+    
+
+    fullStyle = altColor + rowUpdate + wpColor
+    return fullStyle
+
+
 
 
 
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+
