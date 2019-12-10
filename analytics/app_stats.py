@@ -200,7 +200,7 @@ stats = [
             {"checked": 'n', "w": 0, "l": 0}]
     },
     {
-        "name": "deep",
+        "name": "deep val",
         "val": "Deep",
         "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
         "data": [
@@ -208,7 +208,7 @@ stats = [
             {"checked": 'n', "w": 0, "l": 0}]
     },
     {
-        "name": "impls",
+        "name": "impls val",
         "val": "Impls",
         "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
         "data": [
@@ -216,7 +216,7 @@ stats = [
             {"checked": 'n', "w": 0, "l": 0}]
     },
     {
-        "name": "val dp",
+        "name": "dp val",
         "val": "Val DP",
         "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
         "data": [
@@ -224,7 +224,7 @@ stats = [
             {"checked": 'n', "w": 0, "l": 0}]
     },
     {
-        "name": "cons",
+        "name": "cons val",
         "val": "Cons",
         "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
         "data": [
@@ -232,7 +232,7 @@ stats = [
             {"checked": 'n', "w": 0, "l": 0}]
     },
     {
-        "name": "long",
+        "name": "long val",
         "val": "Long",
         "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
         "data": [
@@ -240,7 +240,7 @@ stats = [
             {"checked": 'n', "w": 0, "l": 0}]
     },
     {
-        "name": "ins wk",
+        "name": "ins wk val",
         "val": "Inside / Wk",
         "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
         "data": [

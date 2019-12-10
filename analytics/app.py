@@ -142,7 +142,6 @@ def fill_time_arr(timeStatsDF, df):
     Output: Filtered dataframe, columns ordered properly, with totans and win % and loss %
 '''
 def fill_stats_arr(dataStats, df, optionsArr):
-    start = time.time()
     for rowStats in optionsArr: # For each item in the BT data, iterate through every possible checkbox
         nameTrueVector = (dataStats['name']==rowStats['name'])
         for i in rowStats['data']: # Iterate through every option per checkbox (T or F, sometimes other stuff like R/PB/T)
@@ -155,9 +154,6 @@ def fill_stats_arr(dataStats, df, optionsArr):
                     else:
                         dataStats.iat[position, 4] += 1
 
-    end = time.time()
-    print "total time"
-    print (end-start)
 
 
     # Set a new column 't' (total) to zero for every row
@@ -196,11 +192,54 @@ def calculateWinPTotal(data):
     decimal.getcontext().prec = 4 # 4 digits of precision (INCLUDING digits before the decimal
     return {"numWins": numWins,"wp": round(float (numWins) / float(len(data.index)),3)*100}
 
-initial_wp = calculateWinPTotal(df)["wp"]
+#############################################################
+###################### Get TP Data ##########################
+#############################################################
+def getTPData(data):
+    tpData = {'ins': 0, 'hl': 0, 'slightpasthl': 0, 'pasthl': 0}
+    for index, row in data.iterrows():
+        if row['Ins'] == True:
+            tpData['ins'] += 1
+        elif row['HL'] == True:
+            tpData['hl'] += 1
+        elif row['Slight Past HL'] == True:
+            tpData['slightpasthl'] += 1
+        elif row['Past HL'] == True:
+            tpData['pasthl'] += 1
+    pieData = [
+        {
+            'values': [tpData['ins'], tpData['hl'], tpData['slightpasthl'], tpData['pasthl']],
+            'labels': ['Ins', 'HL', 'SlightPastHL', 'PastHL'],
+            'type': 'pie',
+            'hoverinfo':'label',
+            'textinfo': 'value+percent',
+            'marker': dict(colors=['#ff6e6e', '#ffce63', '#fcfc9d', '#dafaa2']),
+        },
+    ]
+    return pieData
+
+
 
 ############## Call our functions ####################
 d = fill_stats_arr(d, df, optionsArr)
 timeStatsDF = fill_time_arr(timeStatsDF, df)
+wpTotal = calculateWinPTotal(df)
+initial_wp = wpTotal["wp"]
+numWins = wpTotal["numWins"]
+tpData = getTPData(df)
+
+initial_figure_data = dict(
+            data=tpData,
+            layout=dict(
+                title='TP Location',
+                showlegend=False,
+                legend=dict(
+                    x=0,
+                    y=1.0
+                ),
+                margin=dict(l=40, r=0, t=40, b=30)
+            )
+        )
 
 
 ###########################################################
@@ -271,14 +310,7 @@ app.layout = html.Div([
                     'if': {'column_id': c},
                     'width': '10%'
                 } for c in d.columns
-            ], #+ [{'if': {'column_id': c}, 'background-color': 'green'} for c in ['wp']], #NOTE - this works. you can add arrays
-            #style_cell_conditional=[],
-            # style_data_conditional=[
-            #     {
-            #         'if': {'column_id': c},
-            #         'background-color': '#eafce3'
-            #     } for c in ['wp']
-            # ],
+            ],
             style_data_conditional=[]
         )
     ],id='table-div',style={'width': '48%', 'display': 'inline-block'}),
@@ -301,7 +333,12 @@ app.layout = html.Div([
                 } for c in timeStatsDF.columns
             ],
             style_data_conditional=[]
-        )
+        ),
+        dcc.Graph(
+            figure=initial_figure_data,
+            style={'height': '300px', 'width': '300px'},
+            id='tp-pie-graph'
+        ),
     ],id='time-div',style={'width': '48%','position': 'relative', 'left': '3%', 'display': 'inline-block'}),
     html.Div(id='placeholder1'),
 ])
@@ -313,9 +350,12 @@ app.layout = html.Div([
 @app.callback(
     [dash.dependencies.Output("datatable-interactivity", "data"),
     dash.dependencies.Output("datatable-time", "data"),
-    dash.dependencies.Output("text-stats", 'children')],
+    dash.dependencies.Output("text-stats", 'children'),
+    dash.dependencies.Output("tp-pie-graph", "figure")],
+    #Output("datatable-interactivity", "style_data_conditional"),
     [dash.dependencies.Input("filterSelect", "value"),
     dash.dependencies.Input("playSelect", "value")]
+    #Input("datatable-interactivity", "style_data_conditional")]
 )
 def update_table(search_value, play_val):
     global df #Data (actual backtest data)
@@ -323,6 +363,9 @@ def update_table(search_value, play_val):
     global optionsArr # Array of options needed to update stats
     global timeStatsBackup # Zeroed out timeStatsDF
     
+
+    #print "style data"
+    #print style_data
 
     # Make a copy of the ORIGINAL data
     d_fresh_copy = d_fresh.copy()
@@ -371,7 +414,23 @@ def update_table(search_value, play_val):
     numWins = wpTotal["numWins"]
     total = len(dataCopy.index)
 
-    return newStats.to_dict('records'), timeStatsNew.to_dict('records'), "Win %: " + str(wp) + " --- NumWins: " + str(numWins) + " --- Total: " + str(total)
+    #get TP data for pie chart
+    tpData = getTPData(dataCopy)
+    tpFigure = dict(
+            data=tpData,
+            layout=dict(
+                title='TP Location',
+                marker_colors = ['red', 'orange', 'yellow', 'green'],
+                showlegend=False,
+                legend=dict(
+                    x=0,
+                    y=1.0
+                ),
+                margin=dict(l=40, r=0, t=40, b=30)
+            )
+        )
+
+    return newStats.to_dict('records'), timeStatsNew.to_dict('records'), "Win %: " + str(wp) + " --- NumWins: " + str(numWins) + " --- Total: " + str(total), tpFigure
 
 
 
@@ -394,12 +453,13 @@ def reset_filter(n_clicks):
 def highlight_row(active_cell,data):
     wpColors = []
     for row in data:
-        if row[u'wp'] > 57.5:
-            wpColors.append('#e2ffd1')
-        elif row[u'wp'] > 52:
-            wpColors.append('#ffd191')
-        else:
-            wpColors.append('#ff725c')
+        wpColors.append('#e5ffcf')
+        # if row[u'wp'] > 57.5:
+        #     wpColors.append('#a8fc9d')
+        # elif row[u'wp'] > 52:
+        #     wpColors.append('#eefaa2')
+        # else:
+        #     wpColors.append('#ffd294')
 
         
     row_indices = list(range(0,len(data), 1))
@@ -413,12 +473,13 @@ def highlight_row(active_cell,data):
 
     altColor =[{
         'if': {'row_index': 'odd', 'column_id': c},
-        'backgroundColor': 'rgb(248, 248, 248)'
-    } for c in ['val', 'w', 'l', 'lp', 't']]
+        'backgroundColor': 'rgb(245, 245, 245)'
+    } for c in ['name','val','checked', 'w', 'l', 'lp', 't']]
     wpColor = [{
         'if': {'row_index': r, 'column_id': 'wp'},
         'backgroundColor': wpColors[r]
-    } for r in range(0,len(data), 1)]
+    } for r in row_indices] #range(0,len(data), 1)]
+    
 
     fullStyle = altColor + rowUpdate + wpColor
     return fullStyle
@@ -434,12 +495,13 @@ def highlight_row(active_cell,data):
 def highlight_row(active_cell, data):
     wpColors = []
     for row in data:
-        if row[u'wp'] > 57.5:
-            wpColors.append('#e2ffd1')
-        elif row[u'wp'] > 52:
-            wpColors.append('#ffd191')
-        else:
-            wpColors.append('#ff725c')
+        wpColors.append('#e5ffcf')
+        # if row[u'wp'] > 57.5:
+        #     wpColors.append('#a8fc9d')
+        # elif row[u'wp'] > 52:
+        #     wpColors.append('#eefaa2')
+        # else:
+        #     wpColors.append('#ffd294')
 
         
     row_indices = list(range(0,len(data), 1))
@@ -453,12 +515,12 @@ def highlight_row(active_cell, data):
 
     altColor =[{
         'if': {'row_index': 'odd', 'column_id': c},
-        'backgroundColor': 'rgb(248, 248, 248)'
-    } for c in ['val', 'w', 'l', 'lp', 't']]
+        'backgroundColor': 'rgb(245, 245, 245)'
+    } for c in ['name','val','checked', 'w', 'l', 'lp', 't']]
     wpColor = [{
         'if': {'row_index': r, 'column_id': 'wp'},
         'backgroundColor': wpColors[r]
-    } for r in range(0,len(data), 1)]
+    } for r in row_indices] #range(0,len(data), 1)]
     
 
     fullStyle = altColor + rowUpdate + wpColor
