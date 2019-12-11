@@ -353,36 +353,36 @@ stats = [
     #         {"checked": 'L', "w": 0, "l": 0},
     #         {"checked": 'NA', "w": 0, "l": 0}]
     # },
-    {
-        "name": "ins",
-        "val": "Ins",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
-    {
-        "name": "hl",
-        "val": "HL",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
-    {
-        "name": "slight past",
-        "val": "Slight Past HL",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
-    {
-        "name": "past hl",
-        "val": "Past HL",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
+    # {
+    #     "name": "ins",
+    #     "val": "Ins",
+    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+    #     "data": [
+    #         {"checked": 'y', "w": 0, "l": 0},
+    #         {"checked": 'n', "w": 0, "l": 0}]
+    # },
+    # {
+    #     "name": "hl",
+    #     "val": "HL",
+    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+    #     "data": [
+    #         {"checked": 'y', "w": 0, "l": 0},
+    #         {"checked": 'n', "w": 0, "l": 0}]
+    # },
+    # {
+    #     "name": "slight past",
+    #     "val": "Slight Past HL",
+    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+    #     "data": [
+    #         {"checked": 'y', "w": 0, "l": 0},
+    #         {"checked": 'n', "w": 0, "l": 0}]
+    # },
+    # {
+    #     "name": "past hl",
+    #     "val": "Past HL",
+    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+    #     "data": [
+    #         {"checked": 'y', "w": 0, "l": 0},
+    #         {"checked": 'n', "w": 0, "l": 0}]
+    # },
 ]

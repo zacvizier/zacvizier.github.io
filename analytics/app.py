@@ -190,13 +190,18 @@ def calculateWinPTotal(data):
             numWins += 1
         
     decimal.getcontext().prec = 4 # 4 digits of precision (INCLUDING digits before the decimal
-    return {"numWins": numWins,"wp": round(float (numWins) / float(len(data.index)),3)*100}
+    if len(data.index) == 0:
+        wp = 0
+    else:
+        wp = round(float (numWins) / float(len(data.index)),3)*100
+
+    return {"numWins": numWins,"wp": wp}
 
 #############################################################
 ###################### Get TP Data ##########################
 #############################################################
 def getTPData(data):
-    tpData = {'ins': 0, 'hl': 0, 'slightpasthl': 0, 'pasthl': 0}
+    tpData = {'ins': 0, 'hl': 0, 'slightpasthl': 0, 'pasthl': 0, 'imrej': 0}
     for index, row in data.iterrows():
         if row['Ins'] == True:
             tpData['ins'] += 1
@@ -206,14 +211,18 @@ def getTPData(data):
             tpData['slightpasthl'] += 1
         elif row['Past HL'] == True:
             tpData['pasthl'] += 1
+        elif row['ImRej'] == True:
+            tpData['imrej'] += 1
+
     pieData = [
         {
-            'values': [tpData['ins'], tpData['hl'], tpData['slightpasthl'], tpData['pasthl']],
-            'labels': ['Ins', 'HL', 'SlightPastHL', 'PastHL'],
+            'values': [tpData['ins'], tpData['hl'], tpData['slightpasthl'], tpData['pasthl'], tpData['imrej']],
+            'labels': ['Ins', 'HL', 'SlightPastHL', 'PastHL', 'ImRej'],
             'type': 'pie',
-            'hoverinfo':'label',
-            'textinfo': 'value+percent',
-            'marker': dict(colors=['#ff6e6e', '#ffce63', '#fcfc9d', '#dafaa2']),
+            'hoverinfo':'value',
+            'textinfo': 'label+percent',
+            #'fontsize': '9px',
+            'marker': dict(colors=['#ff6e6e', '#ffce63', '#fcfc9d', '#dafaa2', '#d1ccff']),
         },
     ]
     return pieData
