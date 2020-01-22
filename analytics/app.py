@@ -33,12 +33,9 @@ baseStats = stats
 plays = [
     {'label': '2.1', 'value': 2.1},
     {'label': '2.2', 'value': 2.2},
+    {'label': '2.6', 'value': 2.6},
     {'label': '3.1', 'value': 3.1},
     {'label': '3.6', 'value': 3.6},
-    {'label': '4.8', 'value': 4.8},
-    {'label': '5.8', 'value': 5.8},
-    {'label': '7.2', 'value': 7.2},
-    {'label': '7.3', 'value': 7.3},
     ]
 
 times = [6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5]
@@ -142,6 +139,7 @@ def fill_time_arr(timeStatsDF, df):
     Output: Filtered dataframe, columns ordered properly, with totans and win % and loss %
 '''
 def fill_stats_arr(dataStats, df, optionsArr):
+    start = time.time()
     for rowStats in optionsArr: # For each item in the BT data, iterate through every possible checkbox
         nameTrueVector = (dataStats['name']==rowStats['name'])
         for i in rowStats['data']: # Iterate through every option per checkbox (T or F, sometimes other stuff like R/PB/T)
@@ -153,7 +151,6 @@ def fill_stats_arr(dataStats, df, optionsArr):
                         dataStats.iat[position, 3] += 1
                     else:
                         dataStats.iat[position, 4] += 1
-
 
 
     # Set a new column 't' (total) to zero for every row
@@ -203,7 +200,9 @@ def calculateWinPTotal(data):
 def getTPData(data):
     tpData = {'ins': 0, 'hl': 0, 'slightpasthl': 0, 'pasthl': 0, 'imrej': 0}
     for index, row in data.iterrows():
-        if row['Ins'] == True:
+        if row['ImRej'] == True:
+            tpData['imrej'] += 1
+        elif row['Ins'] == True:
             tpData['ins'] += 1
         elif row['HL'] == True:
             tpData['hl'] += 1
@@ -211,8 +210,6 @@ def getTPData(data):
             tpData['slightpasthl'] += 1
         elif row['Past HL'] == True:
             tpData['pasthl'] += 1
-        elif row['ImRej'] == True:
-            tpData['imrej'] += 1
 
     pieData = [
         {
@@ -221,11 +218,39 @@ def getTPData(data):
             'type': 'pie',
             'hoverinfo':'value',
             'textinfo': 'label+percent',
-            #'fontsize': '9px',
             'marker': dict(colors=['#ff6e6e', '#ffce63', '#fcfc9d', '#dafaa2', '#d1ccff']),
         },
     ]
     return pieData
+
+def getSLData(data):
+    slData = {'rec': 0, 'both': 0, 'closeema': 0, 'farema': 0, 'total': 0}
+    for index, row in data.iterrows():
+        if row['Rec'] == True:
+            slData['rec'] += 1
+        if row['Both'] == True:
+            slData['both'] += 1
+        if row['Close EMA'] == 'W':
+            slData['closeema'] += 1
+        if row['Far EMA'] == 'W':
+            slData['farema'] += 1
+    
+    # wp_both = '%.1f' % (float(slData['both'])/float(len(data.index))*100)
+    # wp_close = '%.1f' % (float(slData['closeema'])/float(len(data.index))*100)
+    # wp_far = '%.1f' % (float(slData['farema'])/float(len(data.index))*100)
+    if len(data.index) != 0:
+        wp_both = '%.1f' % (float(slData['both'])/float(len(data.index))*100)
+        wp_close = '%.1f' % (float(slData['closeema'])/float(len(data.index))*100)
+        wp_far = '%.1f' % (float(slData['farema'])/float(len(data.index))*100)
+    else:
+        wp_both = 0.0
+        wp_close = 0.0
+        wp_far = 0.0
+
+
+    res_sl = "Both: " + str(slData['both']) + " (" + str(wp_both) + "%)  ---  Close EMA: " + str(slData['closeema']) + " (" + str(wp_close) + "%)  ---  Far EMA: " + str(slData['farema']) + " (" + str(wp_far) + "%)"
+
+    return res_sl
 
 
 
@@ -258,44 +283,88 @@ initial_figure_data = dict(
 app = dash.Dash(__name__)
 app.layout = html.Div([
     html.Div([
-        dcc.Dropdown(
-            id='filterSelect',
-            options=filterValues,
-            multi=True,
-            value=[]
-        )
-    ],style={'width': '40%', 'display': 'inline-block'}),
-    html.Div([
-        dcc.Dropdown(
-            id='playSelect',
-            options=plays,
-            multi=False,
-            value=2.2
-        ),
-    ],style={'width': '10%', 'display': 'inline-block'}),
-    html.Div([
-        html.Button('Reset Filters', id='reset-button', style={
-            "box-shadow":"inset 0px 1px 0px 0px #dcecfb",
-            "background":"linear-gradient(to bottom, #bddbfa 5%, #80b5ea 100%)",
-            "background-color":"#bddbfa",
-            "border-radius":"6px",
-            "border":"1px solid #84bbf3",
-            "display":"inline-block",
-            "cursor":"pointer",
-            "color":"#ffffff",
-            "font-family":"Arial",
-            "font-size":"15px",
-            "font-weight":"bold",
-            "padding":"6px 24px",
-            "text-decoration":"none",
-            "text-shadow":"0px 1px 0px #528ecc",
-            'position': 'relative',
-            'margin-left': '10px',
-            'bottom': '13px',
-            'height': '35px',
-        }),
-    ],style={'width': '10%', 'display': 'inline-block'}),
-    html.Div(id='text-stats'),
+        html.Div([
+            dcc.Dropdown(
+                id='playSelect',
+                options=plays,
+                multi=False,
+                value=2.2
+            ),
+        ],style={'width': '15%', 'display': 'inline-block'}),
+        html.Div([
+            dcc.Dropdown(
+                id='filterSelect',
+                options=filterValues,
+                multi=True,
+                value=[]
+            )
+        ],style={'width': '65%', 'display': 'inline-block'}),
+        html.Div([
+            html.Button('Reset Filters', id='reset-button', style={
+                "box-shadow":"inset 0px 1px 0px 0px #dcecfb",
+                "background":"linear-gradient(to bottom, #bddbfa 5%, #80b5ea 100%)",
+                "background-color":"#bddbfa",
+                "border-radius":"6px",
+                "border":"1px solid #84bbf3",
+                "display":"inline-block",
+                "cursor":"pointer",
+                "color":"#ffffff",
+                "font-family":"Arial",
+                "font-size":"15px",
+                "font-weight":"bold",
+                "padding":"6px 24px",
+                "text-decoration":"none",
+                "text-shadow":"0px 1px 0px #528ecc",
+                'position': 'relative',
+                'margin-left': '10px',
+                'bottom': '13px',
+                'height': '35px',
+            }),
+        ],style={'width': '20%', 'display': 'inline-block'}),
+        html.Br(),
+        html.Div([
+            dcc.Dropdown(
+                id='playSelect2',
+                options=plays,
+                multi=False
+            ),
+        ],style={'width': '15%', 'display': 'inline-block'}),
+        html.Div([
+            dcc.Dropdown(
+                id='filterSelect2',
+                options=filterValues,
+                multi=True,
+                value=[]
+            )
+        ],style={'width': '65%', 'display': 'inline-block'}),
+        html.Div([
+            html.Button('Reset Filters', id='reset-button2', style={
+                "box-shadow":"inset 0px 1px 0px 0px #dcecfb",
+                "background":"linear-gradient(to bottom, #bddbfa 5%, #80b5ea 100%)",
+                "background-color":"#bddbfa",
+                "border-radius":"6px",
+                "border":"1px solid #84bbf3",
+                "display":"inline-block",
+                "cursor":"pointer",
+                "color":"#ffffff",
+                "font-family":"Arial",
+                "font-size":"15px",
+                "font-weight":"bold",
+                "padding":"6px 24px",
+                "text-decoration":"none",
+                "text-shadow":"0px 1px 0px #528ecc",
+                'position': 'relative',
+                'margin-left': '10px',
+                'bottom': '13px',
+                'height': '35px',
+            }),
+        ],style={'width': '20%', 'display': 'inline-block'}),
+    ], style={'width': '60%', 'display': 'inline-block', 'float': 'left'}),
+    
+    html.Div(id='text-stats', style={'width': '30%', 'display': 'inline-block'}),
+    html.Br(),
+    html.Br(),
+    html.Div(id='sl-stats', style={'width': '30%', 'display': 'inline-block'}),
     # html.Div([
     #     html.Div('Loading...')
     # ], id='loading', style={'background-color': 'red'}),
@@ -322,7 +391,7 @@ app.layout = html.Div([
             ],
             style_data_conditional=[]
         )
-    ],id='table-div',style={'width': '48%', 'display': 'inline-block'}),
+    ],id='table-div',style={'width': '48%', 'display': 'inline-block', 'float': 'left'}), #, 'position': 'absolute', 'top': '100px'
     html.Div([
         dash_table.DataTable(
             id='datatable-time',
@@ -348,7 +417,31 @@ app.layout = html.Div([
             style={'height': '300px', 'width': '300px'},
             id='tp-pie-graph'
         ),
-    ],id='time-div',style={'width': '48%','position': 'relative', 'left': '3%', 'display': 'inline-block'}),
+        # dcc.Graph(
+        #     figure=initial_figure_sl_data,
+        #     style={'height': '300px', 'width': '300px'},
+        #     id='sl-pie-graph'
+        # ),
+        dash_table.DataTable(
+            id='datatable-env',
+            columns=[
+                {"name": i, "id": i, "deletable": False, "selectable": False} for i in d.columns
+            ],
+            data=[],
+            column_selectable="multi",
+            sort_action='native',
+            page_action="native",
+            page_current= 0,
+            page_size= 5,
+            style_cell_conditional=[
+                {
+                    'if': {'column_id': c},
+                    'width': '10%'
+                } for c in d.columns
+            ],
+            style_data_conditional=[]
+        ),
+    ],id='time-div',style={'width': '48%','position': 'relative', 'left': '1%', 'display': 'inline-block'}),
     html.Div(id='placeholder1'),
 ])
 
@@ -359,34 +452,50 @@ app.layout = html.Div([
 @app.callback(
     [dash.dependencies.Output("datatable-interactivity", "data"),
     dash.dependencies.Output("datatable-time", "data"),
+    dash.dependencies.Output("datatable-env", "data"),
     dash.dependencies.Output("text-stats", 'children'),
-    dash.dependencies.Output("tp-pie-graph", "figure")],
-    #Output("datatable-interactivity", "style_data_conditional"),
+    dash.dependencies.Output("tp-pie-graph", "figure"),
+    dash.dependencies.Output("sl-stats", "children")],
+    #dash.dependencies.Output("datatable-interactivity", "style_data_conditional")],
     [dash.dependencies.Input("filterSelect", "value"),
-    dash.dependencies.Input("playSelect", "value")]
+    dash.dependencies.Input("playSelect", "value"),
+    dash.dependencies.Input("filterSelect2", "value"),
+    dash.dependencies.Input("playSelect2", "value")]
     #Input("datatable-interactivity", "style_data_conditional")]
 )
-def update_table(search_value, play_val):
+def update_table(search_value, play_val, search_value2, play_val2):
     global df #Data (actual backtest data)
     global d_fresh #Stats
     global optionsArr # Array of options needed to update stats
     global timeStatsBackup # Zeroed out timeStatsDF
-    
-
-    #print "style data"
-    #print style_data
 
     # Make a copy of the ORIGINAL data
     d_fresh_copy = d_fresh.copy()
     dataCopy = df.copy()
+    dataCopy2 = df.copy() # for second filter, if necessary
     timeCopy = timeStatsBackup.copy()
 
 
     if play_val is not None:
-        dataCopy = dataCopy[dataCopy['Play'] == play_val]
+        # if play_val == 6.8:
+        #     data48 = dataCopy[dataCopy['Play'] == 4.8]
+        #     data58 = dataCopy[dataCopy['Play'] == 5.8]
+        #     dataCopy = pd.concat([data48, data58], ignore_index=True).drop_duplicates()
+        if play_val == 2.6:
+            data22 = dataCopy[(dataCopy['Play'] == 2.2) & (dataCopy['StrMv'] == True)]
+            data36 = dataCopy[dataCopy['Play'] == 3.6]
+            dataCopy = pd.concat([data22, data36], ignore_index=True).drop_duplicates()
+            print len(dataCopy.index)
+        else:
+            dataCopy = dataCopy[dataCopy['Play'] == play_val]
+            
+
+    if play_val2 is not None:
+        dataCopy2 = dataCopy2[dataCopy2['Play'] == play_val2]
 
     # Store the values from the multi-dropdown in a variable. No reason.
     valArr = search_value
+    valArr2 = search_value2
 
     if (valArr is None):
         newStats = d
@@ -394,8 +503,11 @@ def update_table(search_value, play_val):
     # We got values in our multi-select, now we have to filter the data and return the updated data to the app
     else:
         values = []
+        values2 = []
         for val in valArr:
             values.append({"val": val[:val.find(';')], "checked": val[val.find(';')+1:]})
+        for val in valArr2:
+            values2.append({"val": val[:val.find(';')], "checked": val[val.find(';')+1:]})
         
         
         # Iterate through every multi-select value, get the value for "Checked" and filter the list based on it
@@ -411,11 +523,32 @@ def update_table(search_value, play_val):
             elif i['checked'] == 'T':
                 dataCopy = dataCopy[dataCopy[i['val']]=="T"]
 
+        for i in values2:
+            if i['checked'] == 'y':
+                dataCopy2 = dataCopy2[dataCopy2[i['val']]==True]
+            elif i['checked'] == 'n':
+                dataCopy2 = dataCopy2[dataCopy2[i['val']]==False]
+            elif i['checked'] == 'R':
+                dataCopy2 = dataCopy2[dataCopy2[i['val']]=="R"]
+            elif i['checked'] == 'PB':
+                dataCopy2 = dataCopy2[dataCopy2[i['val']]=="PB"]
+            elif i['checked'] == 'T':
+                dataCopy2 = dataCopy2[dataCopy2[i['val']]=="T"]
+
+
+        dataAll = pd.concat([dataCopy, dataCopy2], ignore_index=True).drop_duplicates()
+    
+
+    
+
+    if play_val2 is not None:
+        dataCopy = dataAll.copy()
 
     # Now we send this new data to the stats update functions.
     # Stats DF must be fresh copy
     newStats = fill_stats_arr(d_fresh_copy, dataCopy, optionsArr)
     timeStatsNew = fill_time_arr(timeCopy, dataCopy)
+
 
     # Calculate WP and totals which we will send to the div
     wpTotal=calculateWinPTotal(dataCopy)
@@ -423,7 +556,7 @@ def update_table(search_value, play_val):
     numWins = wpTotal["numWins"]
     total = len(dataCopy.index)
 
-    #get TP data for pie chart
+    #get TP/SL data for pie chart
     tpData = getTPData(dataCopy)
     tpFigure = dict(
             data=tpData,
@@ -438,8 +571,28 @@ def update_table(search_value, play_val):
                 margin=dict(l=40, r=0, t=40, b=30)
             )
         )
+    
+    # slData = getSLData(dataCopy)
+    # slFigure = dict(
+    #         data=slData,
+    #         layout=dict(
+    #             title='SL Location',
+    #             marker_colors = ['red', 'orange', 'yellow', 'green'],
+    #             showlegend=False,
+    #             legend=dict(
+    #                 x=0,
+    #                 y=1.0
+    #             ),
+    #             margin=dict(l=40, r=0, t=40, b=30)
+    #         )
+    #     )
 
-    return newStats.to_dict('records'), timeStatsNew.to_dict('records'), "Win %: " + str(wp) + " --- NumWins: " + str(numWins) + " --- Total: " + str(total), tpFigure
+    slData = getSLData(dataCopy)
+    
+    envStats = newStats[newStats['name']=='env']
+    #print envStats
+
+    return newStats.to_dict('records'), timeStatsNew.to_dict('records'),envStats.to_dict('records'), "Win %: " + str(wp) + "% --- NumWins: " + str(numWins) + " --- Total: " + str(total), tpFigure, slData
 
 
 
@@ -452,46 +605,99 @@ def reset_filter(n_clicks):
     return []
 
 
+################# Reset Filters button #################
+@app.callback(
+    [dash.dependencies.Output("filterSelect2", 'value'),
+    dash.dependencies.Output("playSelect2", 'value')],
+    [dash.dependencies.Input('reset-button2', 'n_clicks')]
+)
+def reset_filter(n_clicks):
+    return [],None
+
+
 #############################################################
 ############ Main Table Cell Click Callback #################
 #############################################################
 @app.callback(
     Output("datatable-interactivity", "style_data_conditional"),
     [Input('datatable-interactivity', 'active_cell'),
-    Input("datatable-interactivity", "data")])
-def highlight_row(active_cell,data):
+    Input("datatable-interactivity", "data"),
+    Input('datatable-interactivity', "filter_query")])
+def highlight_row(active_cell,data, filter_query):
     wpColors = []
-    for row in data:
-        wpColors.append('#e5ffcf')
-        # if row[u'wp'] > 57.5:
-        #     wpColors.append('#a8fc9d')
-        # elif row[u'wp'] > 52:
-        #     wpColors.append('#eefaa2')
-        # else:
-        #     wpColors.append('#ffd294')
+    altColor=[]
+    rowUpdate = []
 
         
-    row_indices = list(range(0,len(data), 1))
-    if active_cell is None:
-        rowUpdate = []
-    else:
-        rowUpdate = [{'if': {'row_index': active_cell['row']},'backgroundColor': 'pink'}]
-        if active_cell['row'] in row_indices: 
-            row_indices.remove(active_cell['row'])
+    if filter_query == None or filter_query == '': #or myQuery == '':
+        for row in data:
+            if row[u'wp'] > 57.5:
+                wpColors.append('#a8fc9d')
+            elif row[u'wp'] > 52:
+                wpColors.append('#eefaa2')
+            else:
+                wpColors.append('#ffd294')
+
+            
+        row_indices = list(range(0,len(data), 1))
+        if active_cell is None:
+            rowUpdate = []
+        else:
+            rowUpdate = [{'if': {'row_index': active_cell['row']},'backgroundColor': 'pink'}]
+            if active_cell['row'] in row_indices: 
+                row_indices.remove(active_cell['row'])
 
 
-    altColor =[{
-        'if': {'row_index': 'odd', 'column_id': c},
-        'backgroundColor': 'rgb(245, 245, 245)'
-    } for c in ['name','val','checked', 'w', 'l', 'lp', 't']]
-    wpColor = [{
-        'if': {'row_index': r, 'column_id': 'wp'},
-        'backgroundColor': wpColors[r]
-    } for r in row_indices] #range(0,len(data), 1)]
+        altColor =[{
+            'if': {'row_index': 'odd', 'column_id': c},
+            'backgroundColor': 'rgb(245, 245, 245)'
+        } for c in ['name','val','checked', 'w', 'l', 'lp', 't']]
+        wpColor = [{
+            'if': {'row_index': r, 'column_id': 'wp'},
+            'backgroundColor': wpColors[r]
+        } for r in row_indices] #range(0,len(data), 1)]
     
 
-    fullStyle = altColor + rowUpdate + wpColor
-    return fullStyle
+        fullStyle = altColor + rowUpdate + wpColor
+        return fullStyle
+    
+    else: 
+        data2 = pd.DataFrame(data)
+        
+        myQuery = filter_query.split('contains ')[1]
+        data3 = data2[data2['name'].str.contains(myQuery)].to_dict('records')
+
+
+        for row in data3:
+            if row[u'wp'] > 57.5:
+                wpColors.append('#a8fc9d')
+            elif row[u'wp'] > 52:
+                wpColors.append('#eefaa2')
+            else:
+                wpColors.append('#ffd294')
+            
+            
+        row_indices = list(range(0,len(data3), 1))
+        if active_cell is None:
+            rowUpdate = []
+        else:
+            rowUpdate = [{'if': {'row_index': active_cell['row']},'backgroundColor': 'pink'}]
+            if active_cell['row'] in row_indices: 
+                row_indices.remove(active_cell['row'])
+
+
+        altColor =[{
+            'if': {'row_index': 'odd', 'column_id': c},
+            'backgroundColor': 'rgb(245, 245, 245)'
+        } for c in ['name','val','checked', 'w', 'l', 'lp', 't']]
+        wpColor = [{
+            'if': {'row_index': r, 'column_id': 'wp'},
+            'backgroundColor': wpColors[r]
+        } for r in row_indices]
+    
+
+        fullStyle = altColor + rowUpdate + wpColor
+        return fullStyle
 
 
 
@@ -504,13 +710,7 @@ def highlight_row(active_cell,data):
 def highlight_row(active_cell, data):
     wpColors = []
     for row in data:
-        wpColors.append('#e5ffcf')
-        # if row[u'wp'] > 57.5:
-        #     wpColors.append('#a8fc9d')
-        # elif row[u'wp'] > 52:
-        #     wpColors.append('#eefaa2')
-        # else:
-        #     wpColors.append('#ffd294')
+        wpColors.append('#dfeef5')
 
         
     row_indices = list(range(0,len(data), 1))

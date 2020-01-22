@@ -80,6 +80,30 @@ stats = [
             {"checked": 'n', "w": 0, "l": 0}]
     },
     {
+        "name": "after gap",
+        "val": "After Gap",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
+    {
+        "name": "isbopb",
+        "val": "Is BOPB",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
+    {
+        "name": "2leg",
+        "val": "2Leg",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
+    {
         "name": "trpb1",
         "val": "Tr Pb 1",
         "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
@@ -256,30 +280,6 @@ stats = [
             {"checked": 'n', "w": 0, "l": 0}]
     },
     {
-        "name": "50",
-        "val": "50",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
-    {
-        "name": "100",
-        "val": "100",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
-    {
-        "name": "200",
-        "val": "200",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
-    {
         "name": "impe",
         "val": "ImpE",
         "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
@@ -303,86 +303,12 @@ stats = [
             {"checked": 'y', "w": 0, "l": 0},
             {"checked": 'n', "w": 0, "l": 0}]
     },
-    # {
-    #     "name": "exe",
-    #     "val": "ExE",
-    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-    #     "data": [
-    #         {"checked": 'y', "w": 0, "l": 0},
-    #         {"checked": 'n', "w": 0, "l": 0}]
-    # },
-    # {
-    #     "name": "better entry",
-    #     "val": "Better Entry",
-    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-    #     "data": [
-    #         {"checked": 'y', "w": 0, "l": 0},
-    #         {"checked": 'n', "w": 0, "l": 0}]
-    # },
-    # {
-    #     "name": "rec",
-    #     "val": "Rec",
-    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-    #     "data": [
-    #         {"checked": 'y', "w": 0, "l": 0},
-    #         {"checked": 'n', "w": 0, "l": 0}]
-    # },
-    # {
-    #     "name": "both",
-    #     "val": "Both",
-    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-    #     "data": [
-    #         {"checked": 'y', "w": 0, "l": 0},
-    #         {"checked": 'n', "w": 0, "l": 0}]
-    # },
-    # {
-    #     "name": "close ema",
-    #     "val": "Close EMA",
-    #     "checkedOptions": [{'dataVal': 'W', 'val': 'W'}, {'dataVal': 'L', 'val': 'L'}, {'dataVal': 'NA', 'val': 'NA'}, {'dataVal': '', 'val': 'L'}],
-    #     "data": [
-    #         {"checked": 'W', "w": 0, "l": 0},
-    #         {"checked": 'L', "w": 0, "l": 0},
-    #         {"checked": 'NA', "w": 0, "l": 0}]
-    # },
-    # {
-    #     "name": "far ema",
-    #     "val": "Far EMA",
-    #     "checkedOptions": [{'dataVal': 'W', 'val': 'W'}, {'dataVal': 'L', 'val': 'L'}, {'dataVal': 'NA', 'val': 'NA'}, {'dataVal': '', 'val': 'L'}],
-    #     "data": [
-    #         {"checked": 'W', "w": 0, "l": 0},
-    #         {"checked": 'L', "w": 0, "l": 0},
-    #         {"checked": 'NA', "w": 0, "l": 0}]
-    # },
-    # {
-    #     "name": "ins",
-    #     "val": "Ins",
-    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-    #     "data": [
-    #         {"checked": 'y', "w": 0, "l": 0},
-    #         {"checked": 'n', "w": 0, "l": 0}]
-    # },
-    # {
-    #     "name": "hl",
-    #     "val": "HL",
-    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-    #     "data": [
-    #         {"checked": 'y', "w": 0, "l": 0},
-    #         {"checked": 'n', "w": 0, "l": 0}]
-    # },
-    # {
-    #     "name": "slight past",
-    #     "val": "Slight Past HL",
-    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-    #     "data": [
-    #         {"checked": 'y', "w": 0, "l": 0},
-    #         {"checked": 'n', "w": 0, "l": 0}]
-    # },
-    # {
-    #     "name": "past hl",
-    #     "val": "Past HL",
-    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-    #     "data": [
-    #         {"checked": 'y', "w": 0, "l": 0},
-    #         {"checked": 'n', "w": 0, "l": 0}]
-    # },
+    {
+        "name": "better entry",
+        "val": "Better Entry",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
 ]
