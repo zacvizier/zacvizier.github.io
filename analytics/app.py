@@ -7,6 +7,7 @@ import pandas as pd
 import decimal
 import warnings
 import time
+import numpy
 
 import textwrap
 
@@ -33,12 +34,13 @@ baseStats = stats
 plays = [
     {'label': '2.1', 'value': 2.1},
     {'label': '2.2', 'value': 2.2},
-    {'label': '2.6', 'value': 2.6},
     {'label': '3.1', 'value': 3.1},
     {'label': '3.6', 'value': 3.6},
+    {'label': '2.6', 'value': 2.6},
+    {'label': '3.3', 'value': 3.3},
     ]
 
-times = [6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5]
+times = [6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5]
 
 timeStats = []
 
@@ -58,6 +60,12 @@ optionsArr = []
 # filterValues will be the values that will be populated in the multi-select field
 #    which is used to filter
 filterValues = []
+
+#timeValues
+timeValues = []
+for i in numpy.arange(6.5,11.5,.5):
+    timeValues.append({"label": i, "value": i})
+
   
 
 # Convert the Stats array of objects into a normal array structure with no children objects
@@ -365,9 +373,16 @@ app.layout = html.Div([
     html.Br(),
     html.Br(),
     html.Div(id='sl-stats', style={'width': '30%', 'display': 'inline-block'}),
-    # html.Div([
-    #     html.Div('Loading...')
-    # ], id='loading', style={'background-color': 'red'}),
+    html.Br(),
+    html.Br(),
+    html.Div([
+            dcc.Dropdown(
+                id='timeSelect',
+                options=timeValues,
+                multi=True,
+                value=[7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5]
+            )
+        ],style={'width': '30%', 'display': 'inline-block'}),
     html.Div([
         dash_table.DataTable(
             id='datatable-interactivity',
@@ -417,11 +432,6 @@ app.layout = html.Div([
             style={'height': '300px', 'width': '300px'},
             id='tp-pie-graph'
         ),
-        # dcc.Graph(
-        #     figure=initial_figure_sl_data,
-        #     style={'height': '300px', 'width': '300px'},
-        #     id='sl-pie-graph'
-        # ),
         dash_table.DataTable(
             id='datatable-env',
             columns=[
@@ -448,7 +458,7 @@ app.layout = html.Div([
 
 #############################################################
 ################### Main App Callbacks ######################
-#############################################################
+############################################################# 
 @app.callback(
     [dash.dependencies.Output("datatable-interactivity", "data"),
     dash.dependencies.Output("datatable-time", "data"),
@@ -460,10 +470,11 @@ app.layout = html.Div([
     [dash.dependencies.Input("filterSelect", "value"),
     dash.dependencies.Input("playSelect", "value"),
     dash.dependencies.Input("filterSelect2", "value"),
+    dash.dependencies.Input("timeSelect", "value"),
     dash.dependencies.Input("playSelect2", "value")]
     #Input("datatable-interactivity", "style_data_conditional")]
 )
-def update_table(search_value, play_val, search_value2, play_val2):
+def update_table(search_value, play_val, search_value2, time_value, play_val2):
     global df #Data (actual backtest data)
     global d_fresh #Stats
     global optionsArr # Array of options needed to update stats
@@ -477,15 +488,14 @@ def update_table(search_value, play_val, search_value2, play_val2):
 
 
     if play_val is not None:
-        # if play_val == 6.8:
-        #     data48 = dataCopy[dataCopy['Play'] == 4.8]
-        #     data58 = dataCopy[dataCopy['Play'] == 5.8]
-        #     dataCopy = pd.concat([data48, data58], ignore_index=True).drop_duplicates()
         if play_val == 2.6:
             data22 = dataCopy[(dataCopy['Play'] == 2.2) & (dataCopy['StrMv'] == True)]
             data36 = dataCopy[dataCopy['Play'] == 3.6]
             dataCopy = pd.concat([data22, data36], ignore_index=True).drop_duplicates()
-            print len(dataCopy.index)
+        elif play_val == 3.3:
+            data31 = dataCopy[dataCopy['Play'] == 3.1]
+            data36 = dataCopy[dataCopy['Play'] == 3.6]
+            dataCopy = pd.concat([data31, data36], ignore_index=True).drop_duplicates()
         else:
             dataCopy = dataCopy[dataCopy['Play'] == play_val]
             
@@ -544,6 +554,16 @@ def update_table(search_value, play_val, search_value2, play_val2):
     if play_val2 is not None:
         dataCopy = dataAll.copy()
 
+
+    
+
+    # Before sending the new data to the stats update function, we want to further filter it to only include the times which we selected
+    if len(time_value) !=0:
+        for index, row in dataCopy.iterrows():
+            if row['Time'] not in time_value:
+                dataCopy.drop(index, inplace=True)
+
+
     # Now we send this new data to the stats update functions.
     # Stats DF must be fresh copy
     newStats = fill_stats_arr(d_fresh_copy, dataCopy, optionsArr)
@@ -571,26 +591,9 @@ def update_table(search_value, play_val, search_value2, play_val2):
                 margin=dict(l=40, r=0, t=40, b=30)
             )
         )
-    
-    # slData = getSLData(dataCopy)
-    # slFigure = dict(
-    #         data=slData,
-    #         layout=dict(
-    #             title='SL Location',
-    #             marker_colors = ['red', 'orange', 'yellow', 'green'],
-    #             showlegend=False,
-    #             legend=dict(
-    #                 x=0,
-    #                 y=1.0
-    #             ),
-    #             margin=dict(l=40, r=0, t=40, b=30)
-    #         )
-    #     )
 
-    slData = getSLData(dataCopy)
-    
+    slData = getSLData(dataCopy)    
     envStats = newStats[newStats['name']=='env']
-    #print envStats
 
     return newStats.to_dict('records'), timeStatsNew.to_dict('records'),envStats.to_dict('records'), "Win %: " + str(wp) + "% --- NumWins: " + str(numWins) + " --- Total: " + str(total), tpFigure, slData
 
@@ -734,9 +737,6 @@ def highlight_row(active_cell, data):
 
     fullStyle = altColor + rowUpdate + wpColor
     return fullStyle
-
-
-
 
 
 
