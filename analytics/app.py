@@ -179,8 +179,10 @@ def fill_stats_arr(dataStats, df, optionsArr):
             dataStats.at[index, 't'] = 0
             dataStats.at[index, 'wp'] = 0
             dataStats.at[index, 'lp'] = 0
+            
     # Re-order the columns to our liking
-    dataStats = dataStats[[ 'name', 'val','checked', 'w','wp', 'l','lp','t']]
+    dataStats = dataStats[[ 'name', 'val','checked', 'w','wp', 'l','lp','t']].sort_values(by=['name'], inplace=False, ascending=True)
+
     return dataStats
 
 
