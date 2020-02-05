@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import dash
 from dash.dependencies import Input, Output
 import dash_table
@@ -272,6 +274,28 @@ initial_wp = wpTotal["wp"]
 numWins = wpTotal["numWins"]
 tpData = getTPData(df)
 
+
+checkboxes = [
+                {'label': 'StrMv Y', 'value': 'StrMv;y'},
+                {'label': 'StrMv N', 'value': 'StrMv;n'},
+                {'label': 'HLLH Y', 'value': 'HLLH;y'},
+                {'label': 'HLLH N', 'value': 'HLLH;n'},
+                {'label': 'Mjr SR Y', 'value': 'Mjr SR;y'},
+                {'label': 'Mjr SR N', 'value': 'Mjr SR;n'},
+                {'label': 'Deep Y', 'value': 'Deep;y'},
+                {'label': 'Deep N', 'value': 'Deep;n'},
+                {'label': 'Inside / Wk Y', 'value': 'Inside / Wk;y'},
+                {'label': 'Inside / Wk N', 'value': 'Inside / Wk;n'},
+                {'label': '2nd PB Wkr Y', 'value': '2nd PB Wkr;y'},
+                {'label': '2nd PB Wkr N', 'value': '2nd PB Wkr;n'},
+                {'label': 'NoRm 2 HL Y', 'value': 'NoRm 2 HL;y'},
+                {'label': 'NoRm 2 HL N', 'value': 'NoRm 2 HL;n'},
+                {'label': 'Is BOPB Y', 'value': 'Is BOPB;y'},
+                {'label': 'Is BOPB N', 'value': 'Is BOPB;n'},
+                {'label': 'Alr BOPB Y', 'value': 'Alr BOPB;y'},
+                {'label': 'Alr BOPB N', 'value': 'Alr BOPB;n'},
+            ]
+
 initial_figure_data = dict(
             data=tpData,
             layout=dict(
@@ -368,9 +392,41 @@ app.layout = html.Div([
                 'bottom': '13px',
                 'height': '35px',
             }),
-        ],style={'width': '20%', 'display': 'inline-block'}),
+        ],style={'width': '20%', 'display': 'inline-block'}), 
+        html.Div([
+            dcc.Checklist(
+                id='checklist',
+                options=checkboxes,
+                value=[],
+                labelStyle={'display': 'block', 'font-size': '12px'},
+                style={'column-count': '9', 'column-gap': '0px'} # column-count: number of columns
+            )
+        ], style={'width': '90%', 'float': 'left', 'height': '42px'}),
+        html.Div([
+            html.Button('X', id='checkbox-button', style={
+                "box-shadow":"inset 0px 1px 0px 0px #dcecfb",
+                "background":"linear-gradient(to bottom, #bddbfa 5%, #80b5ea 100%)",
+                "background-color":"#bddbfa",
+                "border-radius":"6px",
+                "border":"1px solid #84bbf3",
+                "display":"inline-block",
+                "cursor":"pointer",
+                "color":"#ffffff",
+                "font-family":"Arial",
+                "font-size":"15px",
+                "font-weight":"bold",
+                # "padding":"6px 24px",
+                "text-decoration":"none",
+                "text-shadow":"0px 1px 0px #528ecc",
+                # 'position': 'relative',
+                # 'margin-left': '10px',
+                'bottom': '13px',
+                'height': '35px',
+                'float': 'right'
+            }),
+        ],style={'width': '20px', 'display': 'inline-block'}),
     ], style={'width': '60%', 'display': 'inline-block', 'float': 'left'}),
-    
+    html.Br(),
     html.Div(id='text-stats', style={'width': '30%', 'display': 'inline-block'}),
     html.Br(),
     html.Br(),
@@ -473,10 +529,11 @@ app.layout = html.Div([
     dash.dependencies.Input("playSelect", "value"),
     dash.dependencies.Input("filterSelect2", "value"),
     dash.dependencies.Input("timeSelect", "value"),
-    dash.dependencies.Input("playSelect2", "value")]
+    dash.dependencies.Input("playSelect2", "value"),
+    dash.dependencies.Input("checklist", "value")]
     #Input("datatable-interactivity", "style_data_conditional")]
 )
-def update_table(search_value, play_val, search_value2, time_value, play_val2):
+def update_table(search_value, play_val, search_value2, time_value, play_val2, checklist):
     global df #Data (actual backtest data)
     global d_fresh #Stats
     global optionsArr # Array of options needed to update stats
@@ -516,11 +573,14 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2):
     else:
         values = []
         values2 = []
+        valuesCheckbox = []
         for val in valArr:
             values.append({"val": val[:val.find(';')], "checked": val[val.find(';')+1:]})
         for val in valArr2:
             values2.append({"val": val[:val.find(';')], "checked": val[val.find(';')+1:]})
-        
+        for val in checklist:
+            valuesCheckbox.append({"val": val[:val.find(';')], "checked": val[val.find(';')+1:]})
+
         
         # Iterate through every multi-select value, get the value for "Checked" and filter the list based on it
         for i in values:
@@ -546,6 +606,14 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2):
                 dataCopy2 = dataCopy2[dataCopy2[i['val']]=="PB"]
             elif i['checked'] == 'T':
                 dataCopy2 = dataCopy2[dataCopy2[i['val']]=="T"]
+
+        for i in valuesCheckbox:
+            if i['checked'] == 'y':
+                dataCopy = dataCopy[dataCopy[i['val']]==True]
+                dataCopy2 = dataCopy2[dataCopy2[i['val']]==True]
+            elif i['checked'] == 'n':
+                dataCopy = dataCopy[dataCopy[i['val']]==False]
+                dataCopy2 = dataCopy2[dataCopy2[i['val']]==False]
 
 
         dataAll = pd.concat([dataCopy, dataCopy2], ignore_index=True).drop_duplicates()
@@ -618,6 +686,15 @@ def reset_filter(n_clicks):
 )
 def reset_filter(n_clicks):
     return [],None
+
+
+################# Reset Checkboxes button #################
+@app.callback(
+    dash.dependencies.Output("checklist", "value"),
+    [dash.dependencies.Input('checkbox-button', 'n_clicks')]
+)
+def reset_filter(n_clicks):
+    return []
 
 
 #############################################################
