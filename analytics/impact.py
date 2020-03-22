@@ -282,26 +282,6 @@ numWins = wpTotal["numWins"]
 tpData = getTPData(df)
 
 
-checkboxes = [
-                {'label': 'StrMv Y', 'value': 'StrMv;y'},
-                {'label': 'StrMv N', 'value': 'StrMv;n'},
-                {'label': 'HLLH Y', 'value': 'HLLH;y'},
-                {'label': 'HLLH N', 'value': 'HLLH;n'},
-                {'label': 'Mjr SR Y', 'value': 'Mjr SR;y'},
-                {'label': 'Mjr SR N', 'value': 'Mjr SR;n'},
-                {'label': 'Deep Y', 'value': 'Deep;y'},
-                {'label': 'Deep N', 'value': 'Deep;n'},
-                {'label': 'Inside / Wk Y', 'value': 'Inside / Wk;y'},
-                {'label': 'Inside / Wk N', 'value': 'Inside / Wk;n'},
-                {'label': '2nd PB Wkr Y', 'value': '2nd PB Wkr;y'},
-                {'label': '2nd PB Wkr N', 'value': '2nd PB Wkr;n'},
-                {'label': 'NoRm 2 HL Y', 'value': 'NoRm 2 HL;y'},
-                {'label': 'NoRm 2 HL N', 'value': 'NoRm 2 HL;n'},
-                {'label': 'Is BOPB Y', 'value': 'Is BOPB;y'},
-                {'label': 'Is BOPB N', 'value': 'Is BOPB;n'},
-                {'label': 'Alr BOPB Y', 'value': 'Alr BOPB;y'},
-                {'label': 'Alr BOPB N', 'value': 'Alr BOPB;n'},
-            ]
 
 initial_figure_data = dict(
             data=tpData,
@@ -362,92 +342,24 @@ app.layout = html.Div([
                 'height': '35px',
             }),
         ],style={'width': '20%', 'display': 'inline-block'}),
-        html.Br(),
-        html.Div([
+        html.Br()
+    ], style={'width': '60%', 'display': 'inline-block', 'float': 'left'}),
+    html.Div([
             dcc.Dropdown(
-                id='playSelect2',
-                options=plays,
-                multi=False
-            ),
-        ],style={'width': '15%', 'display': 'inline-block'}),
-        html.Div([
-            dcc.Dropdown(
-                id='filterSelect2',
+                id='impactSelect',
                 options=filterValues,
                 multi=True,
                 value=[]
             )
-        ],style={'width': '65%', 'display': 'inline-block'}),
-        html.Div([
-            html.Button('Reset Filters', id='reset-button2', style={
-                "box-shadow":"inset 0px 1px 0px 0px #dcecfb",
-                "background":"linear-gradient(to bottom, #bddbfa 5%, #80b5ea 100%)",
-                "background-color":"#bddbfa",
-                "border-radius":"6px",
-                "border":"1px solid #84bbf3",
-                "display":"inline-block",
-                "cursor":"pointer",
-                "color":"#ffffff",
-                "font-family":"Arial",
-                "font-size":"15px",
-                "font-weight":"bold",
-                "padding":"6px 24px",
-                "text-decoration":"none",
-                "text-shadow":"0px 1px 0px #528ecc",
-                'position': 'relative',
-                'margin-left': '10px',
-                'bottom': '13px',
-                'height': '35px',
-            }),
-        ],style={'width': '20%', 'display': 'inline-block'}), 
-        html.Div([
-            dcc.Checklist(
-                id='checklist',
-                options=checkboxes,
-                value=[],
-                labelStyle={'display': 'block', 'font-size': '12px'},
-                style={'column-count': '9', 'column-gap': '0px'} # column-count: number of columns
-            )
-        ], style={'width': '90%', 'float': 'left', 'height': '42px'}),
-        html.Div([
-            html.Button('X', id='checkbox-button', style={
-                "box-shadow":"inset 0px 1px 0px 0px #dcecfb",
-                "background":"linear-gradient(to bottom, #bddbfa 5%, #80b5ea 100%)",
-                "background-color":"#bddbfa",
-                "border-radius":"6px",
-                "border":"1px solid #84bbf3",
-                "display":"inline-block",
-                "cursor":"pointer",
-                "color":"#ffffff",
-                "font-family":"Arial",
-                "font-size":"15px",
-                "font-weight":"bold",
-                # "padding":"6px 24px",
-                "text-decoration":"none",
-                "text-shadow":"0px 1px 0px #528ecc",
-                # 'position': 'relative',
-                # 'margin-left': '10px',
-                'bottom': '13px',
-                'height': '35px',
-                'float': 'right'
-            }),
-        ],style={'width': '20px', 'display': 'inline-block'}),
-    ], style={'width': '60%', 'display': 'inline-block', 'float': 'left'}),
+        ],style={'width': '40%', 'display': 'inline-block'}),
     html.Br(),
-    html.Div(id='text-stats', style={'width': '30%', 'display': 'inline-block'}),
+    html.Div(id='text-stats', style={'width': '80%', 'display': 'inline-block'}),
     html.Br(),
     html.Br(),
-    html.Div(id='sl-stats', style={'width': '30%', 'display': 'inline-block'}),
+    html.Div(id='sl-stats', style={'width': '80%', 'display': 'inline-block'}),
     html.Br(),
     html.Br(),
-    html.Div([
-            dcc.Dropdown(
-                id='timeSelect',
-                options=timeValues,
-                multi=True,
-                value=[7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5]
-            )
-        ],style={'width': '30%', 'display': 'inline-block'}),
+
     html.Div([
         dash_table.DataTable(
             id='datatable-interactivity',
@@ -456,8 +368,6 @@ app.layout = html.Div([
             ],
             data=d.to_dict('records'),
             column_selectable="multi",
-            #selected_columns=[],
-            #selected_rows=[],
             sort_action='native',
             page_action="native",
             page_current= 0,
@@ -471,53 +381,14 @@ app.layout = html.Div([
             ],
             style_data_conditional=[]
         )
-    ],id='table-div',style={'width': '48%', 'display': 'inline-block', 'float': 'left'}), #, 'position': 'absolute', 'top': '100px'
+    ],id='table-div',style={'width': '48%', 'display': 'inline-block', 'float': 'left'}),
     html.Div([
-        dash_table.DataTable(
-            id='datatable-time',
-            columns=[
-                {"name": i, "id": i, "deletable": False, "selectable": False} for i in timeStatsDF.columns
-            ],
-            data=timeStatsDF.to_dict('records'),
-            column_selectable="multi",
-            sort_action='native',
-            page_action="native",
-            page_current= 0,
-            page_size= 100,
-            style_cell_conditional=[
-                {
-                    'if': {'column_id': c},
-                    'width': '10%'
-                } for c in timeStatsDF.columns
-            ],
-            style_data_conditional=[]
-        ),
         dcc.Graph(
             figure=initial_figure_data,
             style={'height': '300px', 'width': '300px'},
             id='tp-pie-graph'
-        ),
-        dash_table.DataTable(
-            id='datatable-env',
-            columns=[
-                {"name": i, "id": i, "deletable": False, "selectable": False} for i in d.columns
-            ],
-            data=[],
-            column_selectable="multi",
-            sort_action='native',
-            page_action="native",
-            page_current= 0,
-            page_size= 5,
-            style_cell_conditional=[
-                {
-                    'if': {'column_id': c},
-                    'width': '10%'
-                } for c in d.columns
-            ],
-            style_data_conditional=[]
-        ),
+        )
     ],id='time-div',style={'width': '48%','position': 'relative', 'left': '1%', 'display': 'inline-block'}),
-    html.Div(id='placeholder1'),
 ])
 
 
@@ -526,21 +397,13 @@ app.layout = html.Div([
 ############################################################# 
 @app.callback(
     [dash.dependencies.Output("datatable-interactivity", "data"),
-    dash.dependencies.Output("datatable-time", "data"),
-    dash.dependencies.Output("datatable-env", "data"),
     dash.dependencies.Output("text-stats", 'children'),
     dash.dependencies.Output("tp-pie-graph", "figure"),
     dash.dependencies.Output("sl-stats", "children")],
-    #dash.dependencies.Output("datatable-interactivity", "style_data_conditional")],
     [dash.dependencies.Input("filterSelect", "value"),
-    dash.dependencies.Input("playSelect", "value"),
-    dash.dependencies.Input("filterSelect2", "value"),
-    dash.dependencies.Input("timeSelect", "value"),
-    dash.dependencies.Input("playSelect2", "value"),
-    dash.dependencies.Input("checklist", "value")]
-    #Input("datatable-interactivity", "style_data_conditional")]
+    dash.dependencies.Input("playSelect", "value")]
 )
-def update_table(search_value, play_val, search_value2, time_value, play_val2, checklist):
+def update_table(search_value, play_val):
     global df #Data (actual backtest data)
     global d_fresh #Stats
     global optionsArr # Array of options needed to update stats
@@ -549,7 +412,6 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
     # Make a copy of the ORIGINAL data
     d_fresh_copy = d_fresh.copy()
     dataCopy = df.copy()
-    dataCopy2 = df.copy() # for second filter, if necessary
     timeCopy = timeStatsBackup.copy()
 
 
@@ -566,12 +428,8 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
             dataCopy = dataCopy[dataCopy['Play'] == play_val]
             
 
-    if play_val2 is not None:
-        dataCopy2 = dataCopy2[dataCopy2['Play'] == play_val2]
-
     # Store the values from the multi-dropdown in a variable. No reason.
     valArr = search_value
-    valArr2 = search_value2
 
     if (valArr is None):
         newStats = d
@@ -579,14 +437,9 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
     # We got values in our multi-select, now we have to filter the data and return the updated data to the app
     else:
         values = []
-        values2 = []
         valuesCheckbox = []
         for val in valArr:
             values.append({"val": val[:val.find(';')], "checked": val[val.find(';')+1:]})
-        for val in valArr2:
-            values2.append({"val": val[:val.find(';')], "checked": val[val.find(';')+1:]})
-        for val in checklist:
-            valuesCheckbox.append({"val": val[:val.find(';')], "checked": val[val.find(';')+1:]})
 
         
         # Iterate through every multi-select value, get the value for "Checked" and filter the list based on it
@@ -602,43 +455,9 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
             elif i['checked'] == 'T':
                 dataCopy = dataCopy[dataCopy[i['val']]=="T"]
 
-        for i in values2:
-            if i['checked'] == 'y':
-                dataCopy2 = dataCopy2[dataCopy2[i['val']]==True]
-            elif i['checked'] == 'n':
-                dataCopy2 = dataCopy2[dataCopy2[i['val']]==False]
-            elif i['checked'] == 'R':
-                dataCopy2 = dataCopy2[dataCopy2[i['val']]=="R"]
-            elif i['checked'] == 'PB':
-                dataCopy2 = dataCopy2[dataCopy2[i['val']]=="PB"]
-            elif i['checked'] == 'T':
-                dataCopy2 = dataCopy2[dataCopy2[i['val']]=="T"]
-
-        for i in valuesCheckbox:
-            if i['checked'] == 'y':
-                dataCopy = dataCopy[dataCopy[i['val']]==True]
-                dataCopy2 = dataCopy2[dataCopy2[i['val']]==True]
-            elif i['checked'] == 'n':
-                dataCopy = dataCopy[dataCopy[i['val']]==False]
-                dataCopy2 = dataCopy2[dataCopy2[i['val']]==False]
-
-
-        dataAll = pd.concat([dataCopy, dataCopy2], ignore_index=True).drop_duplicates()
+        dataAll = dataCopy
     
 
-    
-
-    if play_val2 is not None:
-        dataCopy = dataAll.copy()
-
-
-    
-
-    # Before sending the new data to the stats update function, we want to further filter it to only include the times which we selected
-    if len(time_value) !=0:
-        for index, row in dataCopy.iterrows():
-            if row['Time'] not in time_value:
-                dataCopy.drop(index, inplace=True)
 
 
     # Now we send this new data to the stats update functions.
@@ -672,7 +491,7 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
     slData = getSLData(dataCopy)    
     envStats = newStats[newStats['name']=='env']
 
-    return newStats.to_dict('records'), timeStatsNew.to_dict('records'),envStats.to_dict('records'), "Win %: " + str(wp) + "% --- NumWins: " + str(numWins) + " --- Total: " + str(total), tpFigure, slData
+    return newStats.to_dict('records'), "Win %: " + str(wp) + "% --- NumWins: " + str(numWins) + " --- Total: " + str(total), tpFigure, slData
 
 
 
@@ -684,24 +503,6 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
 def reset_filter(n_clicks):
     return []
 
-
-################# Reset Filters button #################
-@app.callback(
-    [dash.dependencies.Output("filterSelect2", 'value'),
-    dash.dependencies.Output("playSelect2", 'value')],
-    [dash.dependencies.Input('reset-button2', 'n_clicks')]
-)
-def reset_filter(n_clicks):
-    return [],None
-
-
-################# Reset Checkboxes button #################
-@app.callback(
-    dash.dependencies.Output("checklist", "value"),
-    [dash.dependencies.Input('checkbox-button', 'n_clicks')]
-)
-def reset_filter(n_clicks):
-    return []
 
 
 #############################################################
@@ -740,7 +541,7 @@ def highlight_row(active_cell,data, filter_query):
         altColor =[{
             'if': {'row_index': 'odd', 'column_id': c},
             'backgroundColor': 'rgb(245, 245, 245)'
-        } for c in ['name','val','checked', 'w', 'l', 'lp', 't', 'impact']]
+        } for c in ['name','val','checked', 'w', 'l', 'lp', 't']]
         wpColor = [{
             'if': {'row_index': r, 'column_id': 'wp'},
             'backgroundColor': wpColors[r]
@@ -778,7 +579,7 @@ def highlight_row(active_cell,data, filter_query):
         altColor =[{
             'if': {'row_index': 'odd', 'column_id': c},
             'backgroundColor': 'rgb(245, 245, 245)'
-        } for c in ['name','val','checked', 'w', 'l', 'lp', 't', 'impact']]
+        } for c in ['name','val','checked', 'w', 'l', 'lp', 't']]
         wpColor = [{
             'if': {'row_index': r, 'column_id': 'wp'},
             'backgroundColor': wpColors[r]
@@ -789,40 +590,6 @@ def highlight_row(active_cell,data, filter_query):
         return fullStyle
 
 
-
-
-############## Time styles ################
-@app.callback(
-    Output("datatable-time", "style_data_conditional"),
-    [Input('datatable-time', 'active_cell'),
-    Input("datatable-time", "data")])
-def highlight_row(active_cell, data):
-    wpColors = []
-    for row in data:
-        wpColors.append('#dfeef5')
-
-        
-    row_indices = list(range(0,len(data), 1))
-    if active_cell is None:
-        rowUpdate = []
-    else:
-        rowUpdate = [{'if': {'row_index': active_cell['row']},'backgroundColor': 'pink'}]
-        if active_cell['row'] in row_indices: 
-            row_indices.remove(active_cell['row'])
-
-
-    altColor =[{
-        'if': {'row_index': 'odd', 'column_id': c},
-        'backgroundColor': 'rgb(245, 245, 245)'
-    } for c in ['name','val','checked', 'w', 'l', 'lp', 't', 'impact']]
-    wpColor = [{
-        'if': {'row_index': r, 'column_id': 'wp'},
-        'backgroundColor': wpColors[r]
-    } for r in row_indices] #range(0,len(data), 1)]
-    
-
-    fullStyle = altColor + rowUpdate + wpColor
-    return fullStyle
 
 
 
