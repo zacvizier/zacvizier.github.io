@@ -295,6 +295,38 @@ stats = [
             {"checked": 'y', "w": 0, "l": 0},
             {"checked": 'n', "w": 0, "l": 0}]
     },
+    {
+        "name": "btwn ema",
+        "val": "Btwn EMAs",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
+    {
+        "name": "touched ema",
+        "val": "Touched EMA",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
+    {
+        "name": "mjr dp",
+        "val": "Mjr DP",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
+    {
+        "name": "v deep val",
+        "val": "V Deep Val",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
     # {
     #     "name": "imrej",
     #     "val": "ImRej",

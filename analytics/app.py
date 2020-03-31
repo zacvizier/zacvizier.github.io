@@ -10,18 +10,18 @@ import decimal
 import warnings
 import time
 import numpy
-
 import textwrap
-
-# I was getting an error as a warning that was messing up my app. This suppresses it.
-warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # Import the Stats dict from the app_stats file
 from app_stats import stats
 
+# I was getting an error as a warning that was messing up my app. This suppresses it.
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 
 # Load data from csv
 df1 = pd.read_csv('https://docs.google.com/spreadsheets/d/1VYoIhAj2MyZIWr72o-Ix2Rd1mHN_NVC5tTF6oUYNPUU/export?format=csv')
+
 # Filter only rows with a valid Id
 df = df1[(df1['Id'] > 0)]
 
@@ -42,8 +42,8 @@ plays = [
     {'label': '3.3', 'value': 3.3},
     ]
 
+# Set up time
 times = [6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5]
-
 timeStats = []
 
 for i in times:
@@ -217,12 +217,15 @@ def calculateWinPTotal(data):
 ###################### Get TP Data ##########################
 #############################################################
 def getTPData(data):
+    insWins = 0
     tpData = {'ins': 0, 'hl': 0, 'slightpasthl': 0, 'pasthl': 0, 'imrej': 0}
     for index, row in data.iterrows():
         if row['ImRej'] == True:
             tpData['imrej'] += 1
         elif row['Ins'] == True:
             tpData['ins'] += 1
+            if row['Res'] == 'W':
+                insWins += 1
         elif row['HL'] == True:
             tpData['hl'] += 1
         elif row['Slight Past HL'] == True:
@@ -230,17 +233,21 @@ def getTPData(data):
         elif row['Past HL'] == True:
             tpData['pasthl'] += 1
 
+    # print "inswins:" + str(insWins)
+    tpNumbers = [tpData['imrej'], tpData['ins']-insWins, insWins, tpData['hl'], tpData['slightpasthl'], tpData['pasthl']]
+    # print tpNumbers
+
     pieData = [
         {
-            'values': [tpData['ins'], tpData['hl'], tpData['slightpasthl'], tpData['pasthl'], tpData['imrej']],
-            'labels': ['Ins', 'HL', 'SlightPastHL', 'PastHL', 'ImRej'],
+            'values': [tpData['imrej'], tpData['ins'], tpData['hl'], tpData['slightpasthl'], tpData['pasthl']],
+            'labels': ['ImRej', 'Ins', 'HL', 'SlightPastHL', 'PastHL'],
             'type': 'pie',
-            'hoverinfo':'value',
+            'hoverinfo':'value+percent',
             'textinfo': 'label+percent',
-            'marker': dict(colors=['#ff6e6e', '#ffce63', '#fcfc9d', '#dafaa2', '#d1ccff']),
+            'marker': dict(colors=['#d1ccff','#ff6e6e', '#ffce63', '#fcfc9d', '#dafaa2']),
         },
     ]
-    return pieData
+    return pieData, tpNumbers
 
 def getSLData(data):
     slData = {'rec': 0, 'both': 0, 'closeema': 0, 'farema': 0, 'total': 0}
@@ -253,10 +260,7 @@ def getSLData(data):
             slData['closeema'] += 1
         if row['Far EMA'] == 'W':
             slData['farema'] += 1
-    
-    # wp_both = '%.1f' % (float(slData['both'])/float(len(data.index))*100)
-    # wp_close = '%.1f' % (float(slData['closeema'])/float(len(data.index))*100)
-    # wp_far = '%.1f' % (float(slData['farema'])/float(len(data.index))*100)
+
     if len(data.index) != 0:
         wp_both = '%.1f' % (float(slData['both'])/float(len(data.index))*100)
         wp_close = '%.1f' % (float(slData['closeema'])/float(len(data.index))*100)
@@ -279,28 +283,37 @@ timeStatsDF = fill_time_arr(timeStatsDF, df)
 wpTotal = calculateWinPTotal(df)
 initial_wp = wpTotal["wp"]
 numWins = wpTotal["numWins"]
-tpData = getTPData(df)
+tpData = getTPData(df)[0]
+
 
 
 checkboxes = [
-                {'label': 'StrMv Y', 'value': 'StrMv;y'},
-                {'label': 'StrMv N', 'value': 'StrMv;n'},
-                {'label': 'HLLH Y', 'value': 'HLLH;y'},
-                {'label': 'HLLH N', 'value': 'HLLH;n'},
-                {'label': 'Mjr SR Y', 'value': 'Mjr SR;y'},
-                {'label': 'Mjr SR N', 'value': 'Mjr SR;n'},
+                {'label': 'Ins/Wk Y', 'value': 'Inside / Wk;y'},
+                {'label': 'Ins/Wk N', 'value': 'Inside / Wk;n'},
                 {'label': 'Deep Y', 'value': 'Deep;y'},
                 {'label': 'Deep N', 'value': 'Deep;n'},
-                {'label': 'Inside / Wk Y', 'value': 'Inside / Wk;y'},
-                {'label': 'Inside / Wk N', 'value': 'Inside / Wk;n'},
-                {'label': '2nd PB Wkr Y', 'value': '2nd PB Wkr;y'},
-                {'label': '2nd PB Wkr N', 'value': '2nd PB Wkr;n'},
-                {'label': 'NoRm 2 HL Y', 'value': 'NoRm 2 HL;y'},
-                {'label': 'NoRm 2 HL N', 'value': 'NoRm 2 HL;n'},
+                {'label': 'Long Y', 'value': 'Long;y'},
+                {'label': 'Long N', 'value': 'Long;n'},
                 {'label': 'Is BOPB Y', 'value': 'Is BOPB;y'},
                 {'label': 'Is BOPB N', 'value': 'Is BOPB;n'},
                 {'label': 'Alr BOPB Y', 'value': 'Alr BOPB;y'},
                 {'label': 'Alr BOPB N', 'value': 'Alr BOPB;n'},
+                {'label': 'NoRm Y', 'value': 'NoRm 2 HL;y'},
+                {'label': 'NoRm N', 'value': 'NoRm 2 HL;n'},
+                {'label': 'Mjr SR Y', 'value': 'Mjr SR;y'},
+                {'label': 'Mjr SR N', 'value': 'Mjr SR;n'},
+                {'label': '2PB Wkr Y', 'value': '2nd PB Wkr;y'},
+                {'label': '2PB Wkr N', 'value': '2nd PB Wkr;n'},
+                {'label': 'Mjr DP Y', 'value': 'Mjr DP;y'},
+                {'label': 'Mjr DP N', 'value': 'Mjr DP;n'},
+                {'label': 'DP Y', 'value': 'DP;y'},
+                {'label': 'DP N', 'value': 'DP;n'},
+                {'label': 'V Deep Y', 'value': 'V Deep Val;y'},
+                {'label': 'V Deep N', 'value': 'V Deep Val;n'},
+                {'label': 'Btwn Y', 'value': 'Btwn EMAs;y'},
+                {'label': 'Btwn N', 'value': 'Btwn EMAs;n'},
+                {'label': 'Touched Y', 'value': 'Touched EMA;y'},
+                {'label': 'Touched N', 'value': 'Touched EMA;n'},
             ]
 
 initial_figure_data = dict(
@@ -351,7 +364,7 @@ app.layout = html.Div([
                 "cursor":"pointer",
                 "color":"#ffffff",
                 "font-family":"Arial",
-                "font-size":"15px",
+                "font-size":"11px",
                 "font-weight":"bold",
                 "padding":"6px 24px",
                 "text-decoration":"none",
@@ -361,7 +374,7 @@ app.layout = html.Div([
                 'bottom': '13px',
                 'height': '35px',
             }),
-        ],style={'width': '20%', 'display': 'inline-block'}),
+        ],style={'width': '15%', 'display': 'inline-block'}),
         html.Br(),
         html.Div([
             dcc.Dropdown(
@@ -389,7 +402,7 @@ app.layout = html.Div([
                 "cursor":"pointer",
                 "color":"#ffffff",
                 "font-family":"Arial",
-                "font-size":"15px",
+                "font-size":"11px",
                 "font-weight":"bold",
                 "padding":"6px 24px",
                 "text-decoration":"none",
@@ -399,16 +412,8 @@ app.layout = html.Div([
                 'bottom': '13px',
                 'height': '35px',
             }),
-        ],style={'width': '20%', 'display': 'inline-block'}), 
-        html.Div([
-            dcc.Checklist(
-                id='checklist',
-                options=checkboxes,
-                value=[],
-                labelStyle={'display': 'block', 'font-size': '12px'},
-                style={'column-count': '9', 'column-gap': '0px'} # column-count: number of columns
-            )
-        ], style={'width': '90%', 'float': 'left', 'height': '42px'}),
+        ],style={'width': '15%', 'display': 'inline-block'}), 
+        
         html.Div([
             html.Button('X', id='checkbox-button', style={
                 "box-shadow":"inset 0px 1px 0px 0px #dcecfb",
@@ -432,22 +437,81 @@ app.layout = html.Div([
                 'float': 'right'
             }),
         ],style={'width': '20px', 'display': 'inline-block'}),
-    ], style={'width': '60%', 'display': 'inline-block', 'float': 'left'}),
-    html.Br(),
-    html.Div(id='text-stats', style={'width': '30%', 'display': 'inline-block'}),
-    html.Br(),
-    html.Br(),
-    html.Div(id='sl-stats', style={'width': '30%', 'display': 'inline-block'}),
-    html.Br(),
+    ], style={'width': '53%', 'display': 'inline-block', 'float': 'left'}),
     html.Br(),
     html.Div([
+            dcc.Checklist(
+                id='checklist',
+                options=checkboxes,
+                value=['Long;n', 'Is BOPB;n', 'NoRm 2 HL;n', 'Mjr SR;n', '2nd PB Wkr;n', 'Mjr DP;n', 'DP;n', 'V Deep Val;n', 'Btwn EMAs;n', 'Touched EMA;n'],
+                labelStyle={'display': 'block', 'font-size': '12px'},
+                style={'column-count': '7', 'column-gap': '0px'} # column-count: number of columns
+            )
+        ], style={'width': '45%', 'float': 'right', 'height': '80px', 'position': 'relative', 'margin-top': '-20px', 'right': '50px'}), #42px
+    
+    
+    html.Div([
+        html.Div(id='text-stats', style={'width': '60%', 'display': 'inline-block'}),
+        html.Br(),
+        html.Br(),
+        html.Div(id='sl-stats', style={'width': '60%', 'display': 'inline-block'}),
+        html.Br(),
+        html.Br(),
+        html.Div([
+            dcc.Graph(
+                figure=initial_figure_data,
+                style={'height': '300px', 'width': '300px', 'display': 'none'},#'inline-block'},
+                id='tp-pie-graph'
+            ),
+            html.Div(id='tp-stats', style={'float':'right'}),
+        ]),
+        dash_table.DataTable(
+            id='datatable-env',
+            columns=[
+                {"name": i, "id": i, "deletable": False, "selectable": False} for i in d.columns
+            ],
+            data=[],
+            column_selectable="multi",
+            sort_action='native',
+            page_action="native",
+            page_current= 0,
+            page_size= 5,
+            style_cell_conditional=[
+                {
+                    'if': {'column_id': c},
+                    'width': '10%'
+                } for c in d.columns
+            ],
+            style_data_conditional=[]
+        ),
+        html.Div([
             dcc.Dropdown(
                 id='timeSelect',
                 options=timeValues,
                 multi=True,
                 value=[7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5]
             )
-        ],style={'width': '30%', 'display': 'inline-block'}),
+        ],style={'width': '75%', 'display': 'inline-block', 'margin-top': '20px'}),
+        dash_table.DataTable(
+            id='datatable-time',
+            columns=[
+                {"name": i, "id": i, "deletable": False, "selectable": False} for i in timeStatsDF.columns
+            ],
+            data=timeStatsDF.to_dict('records'),
+            column_selectable="multi",
+            sort_action='native',
+            page_action="native",
+            page_current= 0,
+            page_size= 100,
+            style_cell_conditional=[
+                {
+                    'if': {'column_id': c},
+                    'width': '10%'
+                } for c in timeStatsDF.columns
+            ],
+            style_data_conditional=[]
+        ),
+    ],id='time-div',style={'width': '48%','position': 'relative', 'left': '1%', 'display': 'inline-block'}),
     html.Div([
         dash_table.DataTable(
             id='datatable-interactivity',
@@ -472,51 +536,6 @@ app.layout = html.Div([
             style_data_conditional=[]
         )
     ],id='table-div',style={'width': '48%', 'display': 'inline-block', 'float': 'left'}), #, 'position': 'absolute', 'top': '100px'
-    html.Div([
-        dash_table.DataTable(
-            id='datatable-time',
-            columns=[
-                {"name": i, "id": i, "deletable": False, "selectable": False} for i in timeStatsDF.columns
-            ],
-            data=timeStatsDF.to_dict('records'),
-            column_selectable="multi",
-            sort_action='native',
-            page_action="native",
-            page_current= 0,
-            page_size= 100,
-            style_cell_conditional=[
-                {
-                    'if': {'column_id': c},
-                    'width': '10%'
-                } for c in timeStatsDF.columns
-            ],
-            style_data_conditional=[]
-        ),
-        dcc.Graph(
-            figure=initial_figure_data,
-            style={'height': '300px', 'width': '300px'},
-            id='tp-pie-graph'
-        ),
-        dash_table.DataTable(
-            id='datatable-env',
-            columns=[
-                {"name": i, "id": i, "deletable": False, "selectable": False} for i in d.columns
-            ],
-            data=[],
-            column_selectable="multi",
-            sort_action='native',
-            page_action="native",
-            page_current= 0,
-            page_size= 5,
-            style_cell_conditional=[
-                {
-                    'if': {'column_id': c},
-                    'width': '10%'
-                } for c in d.columns
-            ],
-            style_data_conditional=[]
-        ),
-    ],id='time-div',style={'width': '48%','position': 'relative', 'left': '1%', 'display': 'inline-block'}),
     html.Div(id='placeholder1'),
 ])
 
@@ -530,15 +549,14 @@ app.layout = html.Div([
     dash.dependencies.Output("datatable-env", "data"),
     dash.dependencies.Output("text-stats", 'children'),
     dash.dependencies.Output("tp-pie-graph", "figure"),
-    dash.dependencies.Output("sl-stats", "children")],
-    #dash.dependencies.Output("datatable-interactivity", "style_data_conditional")],
+    dash.dependencies.Output("sl-stats", "children"),
+    dash.dependencies.Output("tp-stats", "children")],
     [dash.dependencies.Input("filterSelect", "value"),
     dash.dependencies.Input("playSelect", "value"),
     dash.dependencies.Input("filterSelect2", "value"),
     dash.dependencies.Input("timeSelect", "value"),
     dash.dependencies.Input("playSelect2", "value"),
     dash.dependencies.Input("checklist", "value")]
-    #Input("datatable-interactivity", "style_data_conditional")]
 )
 def update_table(search_value, play_val, search_value2, time_value, play_val2, checklist):
     global df #Data (actual backtest data)
@@ -624,15 +642,9 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
 
 
         dataAll = pd.concat([dataCopy, dataCopy2], ignore_index=True).drop_duplicates()
-    
-
-    
 
     if play_val2 is not None:
         dataCopy = dataAll.copy()
-
-
-    
 
     # Before sending the new data to the stats update function, we want to further filter it to only include the times which we selected
     if len(time_value) !=0:
@@ -654,7 +666,8 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
     total = len(dataCopy.index)
 
     #get TP/SL data for pie chart
-    tpData = getTPData(dataCopy)
+    tpData, tpValues = getTPData(dataCopy)
+    #print tpData[0]['values']
     tpFigure = dict(
             data=tpData,
             layout=dict(
@@ -672,7 +685,21 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
     slData = getSLData(dataCopy)    
     envStats = newStats[newStats['name']=='env']
 
-    return newStats.to_dict('records'), timeStatsNew.to_dict('records'),envStats.to_dict('records'), "Win %: " + str(wp) + "% --- NumWins: " + str(numWins) + " --- Total: " + str(total), tpFigure, slData
+
+    decimal.getcontext().prec = 4
+    tpTotal = tpValues[0] + tpValues[1] + tpValues[2] + tpValues[3] + tpValues[4] + tpValues[5]
+
+    hl_plus_total   = tpValues[3] + tpValues[4] + tpValues[5]
+    insW_plus_total = tpValues[2] + tpValues[3] + tpValues[4] + tpValues[5]
+
+    hl_plus = decimal.Decimal(hl_plus_total) / decimal.Decimal(tpTotal)*100
+    insW_plus = decimal.Decimal(insW_plus_total) / decimal.Decimal(tpTotal)*100
+
+    tp_str = "HL+: " + str(hl_plus) + " ----  insW+" + str(insW_plus)
+
+
+
+    return newStats.to_dict('records'), timeStatsNew.to_dict('records'),envStats.to_dict('records'), "Win %: " + str(wp) + "% --- NumWins: " + str(numWins) + " --- Total: " + str(total), tpFigure, slData, tp_str
 
 
 
@@ -701,7 +728,7 @@ def reset_filter(n_clicks):
     [dash.dependencies.Input('checkbox-button', 'n_clicks')]
 )
 def reset_filter(n_clicks):
-    return []
+    return ['Long;n', 'Is BOPB;n', 'NoRm 2 HL;n', 'Mjr SR;n', '2nd PB Wkr;n', 'Mjr DP;n', 'DP;n', 'V Deep Val;n', 'Btwn EMAs;n', 'Touched EMA;n']
 
 
 #############################################################
@@ -818,7 +845,7 @@ def highlight_row(active_cell, data):
     wpColor = [{
         'if': {'row_index': r, 'column_id': 'wp'},
         'backgroundColor': wpColors[r]
-    } for r in row_indices] #range(0,len(data), 1)]
+    } for r in row_indices]
     
 
     fullStyle = altColor + rowUpdate + wpColor
