@@ -21,24 +21,24 @@ stats = [
             {"checked": 'y', "w": 0, "l": 0},
             {"checked": 'n', "w": 0, "l": 0}]
     },
-    {
-        "name": "imp sr",
-        "val": "Imp SR",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "plays": [2.1,2.2,3.1,3.6,4.8,5.8,7.2,7.3],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
-    {
-        "name": "tr sr",
-        "val": "Tr SR",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "plays": [2.1,2.2,3.1,3.6,4.8,5.8,7.2,7.3],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
+    # {
+    #     "name": "imp sr",
+    #     "val": "Imp SR",
+    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+    #     "plays": [2.1,2.2,3.1,3.6,4.8,5.8,7.2,7.3],
+    #     "data": [
+    #         {"checked": 'y', "w": 0, "l": 0},
+    #         {"checked": 'n', "w": 0, "l": 0}]
+    # },
+    # {
+    #     "name": "tr sr",
+    #     "val": "Tr SR",
+    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+    #     "plays": [2.1,2.2,3.1,3.6,4.8,5.8,7.2,7.3],
+    #     "data": [
+    #         {"checked": 'y', "w": 0, "l": 0},
+    #         {"checked": 'n', "w": 0, "l": 0}]
+    # },
     {
         "name": "mjr sr",
         "val": "Mjr SR",
@@ -183,14 +183,14 @@ stats = [
             {"checked": 'y', "w": 0, "l": 0},
             {"checked": 'n', "w": 0, "l": 0}]
     },
-    {
-        "name": "vrev",
-        "val": "V Rev",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
+    # {
+    #     "name": "vrev",
+    #     "val": "V Rev",
+    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+    #     "data": [
+    #         {"checked": 'y', "w": 0, "l": 0},
+    #         {"checked": 'n', "w": 0, "l": 0}]
+    # },
     {
         "name": "cons1",
         "val": "Cons Pk 1",
@@ -326,7 +326,7 @@ stats = [
         "data": [
             {"checked": 'y', "w": 0, "l": 0},
             {"checked": 'n', "w": 0, "l": 0}]
-    },
+    }
     # {
     #     "name": "imrej",
     #     "val": "ImRej",

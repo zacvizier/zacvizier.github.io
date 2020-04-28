@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import dash
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import dash_table
 import dash_core_components as dcc
 import dash_html_components as html
@@ -55,7 +55,7 @@ plays = [
     ]
 
 # Set up time
-times = [6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5]
+times = [6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0]
 timeStats = []
 
 for i in times:
@@ -98,6 +98,8 @@ for data in rows:
     label = data['name'] + ' ' + data['checked'] # The label of the value in the multi-select field will be the name SPACE y or n
     value = data['val'] + ';' + data['checked'] # The actual value (behind the scenes) will have a semicolon delimiter
     filterValues.append({"label": label, "value": value}) # Now just append these two values as an object in the filterValues array
+
+filterValues.append({'value': "Env;PB n", "label": "env PB N"})
 
 # Create a dataframe using the rows array we created out of the Stats object array
 d = pd.DataFrame(rows) 
@@ -159,6 +161,10 @@ def fill_stats_arr(dataStats, df, optionsArr):
                     else:
                         dataStats.iat[position, 4] += 1
 
+    pb_no_wins = dataStats.at[0, 'w'] + dataStats.at[1, 'w']
+    pb_no_loss = dataStats.at[0, 'l'] + dataStats.at[1, 'l']
+    df_pb_n = pd.DataFrame([['Env', 'env', 'PB n', pb_no_wins , pb_no_loss]], columns=['val', 'name', 'checked', 'w', 'l'])
+    dataStats = dataStats.append(df_pb_n, ignore_index=True)
 
     # Set a new column 't' (total) to zero for every row
     dataStats['t']=0
@@ -187,7 +193,7 @@ def fill_stats_arr(dataStats, df, optionsArr):
             dataStats.at[index, 'impact'] = 0
             
     # Re-order the columns to our liking
-    dataStats = dataStats[[ 'name','checked', 'wp', 't', 'impact']].sort_values(by=['name'], inplace=False, ascending=True)
+    dataStats = dataStats[[ 'name','checked', 'wp', 'w', 't', 'impact']].sort_values(by=['name'], inplace=False, ascending=True)
 
     return dataStats
 
@@ -319,116 +325,124 @@ checkboxes = [
 
 app = dash.Dash(__name__)
 app.layout = html.Div([
+    dcc.Store(id='memory'),
+    dcc.Store(id='info'),
     html.Div([ # top
-        html.Div([
-            html.Div([
-                dcc.Dropdown(
+        html.Div([ # selections/btns
+            html.Div([ # selections
+                html.Div([ 
+                    dcc.Dropdown(
                     id='playSelect',
                     options=plays,
                     multi=False,
-                    value=2.2
-                ),
-            ],style={'width': '15%', 'display': 'inline-block'}),
-            html.Div([
-                dcc.Dropdown(
-                    id='filterSelect',
-                    options=filterValues,
-                    multi=True,
-                    value=[]
-                )
-            ],style={'width': '65%', 'display': 'inline-block'}),
-            html.Div([
-                html.Button('Reset Filters', id='reset-button', style={
-                    "box-shadow":"inset 0px 1px 0px 0px #dcecfb",
-                    "background":"linear-gradient(to bottom, #bddbfa 5%, #80b5ea 100%)",
-                    "background-color":"#bddbfa",
+                    value=2.2 )], style={'width':'10%', 'display': 'inline-block'}),
+                html.Div([
+                    dcc.Dropdown(
+                        id='filterSelect',
+                        options=filterValues,
+                        multi=True,
+                        value=[])], style={'width':'50%', 'display': 'inline-block', 'margin-left': '0.5%'}),
+                html.Div([
+                    dcc.Input(
+                        id="numEntries", 
+                        type="number", 
+                        placeholder="# Entries", 
+                        debounce=True,
+                        style={
+                            'display': 'inline-block',
+                            'height': '28px',
+                            'width': '15%',
+                            'border-radius': '8%',
+                            'margin-left': '0.5%',
+                            'position': 'relative',
+                        }),
+                    dcc.Input(
+                        id="ticker", 
+                        type="text", 
+                        placeholder="Stock", 
+                        debounce=True,
+                        style={
+                            'display': 'inline-block',
+                            'height': '28px',
+                            'width': '15%',
+                            'border-radius': '8%',
+                            'margin-left': '0.5%',
+                            'position': 'relative',
+                        }),
+                    dcc.Input(
+                        id="id-start", 
+                        type="number", 
+                        placeholder="Start", 
+                        debounce=True,
+                        style={
+                            'display': 'inline-block',
+                            'height': '28px',
+                            'width': '15%',
+                            'border-radius': '8%',
+                            'margin-left': '0.5%',
+                            'position': 'relative',
+                        }),
+                    dcc.Input(
+                        id="id-end", 
+                        type="number", 
+                        placeholder="End", 
+                        debounce=True,
+                        style={
+                            'display': 'inline-block',
+                            'height': '28px',
+                            'width': '15%',
+                            'border-radius': '8%',
+                            'margin-left': '0.5%',
+                            'position': 'relative',
+                        }),
+                        ], style={'position': 'absolute','display': 'inline-block'})
+                ],style={'width': '95%', 'display': 'inline-block'}), 
+            html.Div([ #btns
+                html.Button('Submit', id='submit-button', style={
+                    "box-shadow":"inset 0px 1px 0px 0px #a6e7ff",
+                    "background":"linear-gradient(to bottom, #a6e7ff 5%, #6db6d1 100%)",
                     "border-radius":"6px",
-                    "border":"1px solid #84bbf3",
-                    "display":"inline-block",
-                    "cursor":"pointer",
+                    "border":"1px solid #a6e7ff",
                     "color":"#ffffff",
-                    "font-family":"Arial",
-                    "font-size":"11px",
-                    "font-weight":"bold",
                     "padding":"6px 24px",
-                    "text-decoration":"none",
-                    "text-shadow":"0px 1px 0px #528ecc",
-                    'position': 'relative',
-                    'margin-left': '10px',
-                    'bottom': '13px',
+                    'font-size': '20px',
                     'height': '35px',
-                }),
-            ],style={'width': '15%', 'display': 'inline-block'}),
-            html.Br(),
-            html.Div([
-                dcc.Dropdown(
-                    id='playSelect2',
-                    options=plays,
-                    multi=False
-                ),
-            ],style={'width': '15%', 'display': 'inline-block'}),
-            html.Div([
-                dcc.Dropdown(
-                    id='filterSelect2',
-                    options=filterValues,
-                    multi=True,
-                    value=[]
-                )
-            ],style={'width': '65%', 'display': 'inline-block'}),
-            html.Div([
-                html.Button('Reset Filters', id='reset-button2', style={
-                    "box-shadow":"inset 0px 1px 0px 0px #dcecfb",
-                    "background":"linear-gradient(to bottom, #bddbfa 5%, #80b5ea 100%)",
-                    "background-color":"#bddbfa",
+                    'width': '32%'
+                    }),
+                html.Button('Screenshots', id='screenshot-button', style={
+                    "box-shadow":"inset 0px 1px 0px 0px #9caaff",
+                    "background":"linear-gradient(to bottom, #9caaff 5%, #3c488f 100%)",
                     "border-radius":"6px",
-                    "border":"1px solid #84bbf3",
-                    "display":"inline-block",
-                    "cursor":"pointer",
+                    "border":"1px solid #9caaff",
                     "color":"#ffffff",
-                    "font-family":"Arial",
-                    "font-size":"11px",
-                    "font-weight":"bold",
-                    "padding":"6px 24px",
-                    "text-decoration":"none",
-                    "text-shadow":"0px 1px 0px #528ecc",
-                    'position': 'relative',
-                    'margin-left': '10px',
-                    'bottom': '13px',
+                    'margin-left': '2%',
+                    'font-size': '20px',
                     'height': '35px',
-                }),
-            ],style={'width': '15%', 'display': 'inline-block'}), 
-            
-            html.Div([
-                html.Button('X', id='checkbox-button', style={
-                    "box-shadow":"inset 0px 1px 0px 0px #dcecfb",
-                    "background":"linear-gradient(to bottom, #bddbfa 5%, #80b5ea 100%)",
-                    "background-color":"#bddbfa",
+                    'width': '32%',
+                    }),
+                html.Button('Clear', id='checkbox-button', style={
+                    "box-shadow":"inset 0px 1px 0px 0px #fc77d7",
+                    "background":"linear-gradient(to bottom, #fc77d7 5%, #7a175e 100%)",
                     "border-radius":"6px",
-                    "border":"1px solid #84bbf3",
-                    "display":"inline-block",
-                    "cursor":"pointer",
+                    "border":"1px solid #fc77d7",
                     "color":"#ffffff",
-                    "font-family":"Arial",
-                    "font-size":"15px",
-                    "font-weight":"bold",
-                    "text-decoration":"none",
-                    "text-shadow":"0px 1px 0px #528ecc",
-                    'bottom': '13px',
+                    'margin-left': '2%',
+                    'font-size': '20px',
                     'height': '35px',
-                    'float': 'right'
-                }),
-            ],style={'width': '20px', 'display': 'inline-block'}),
-        ], style={'width': '53%', 'display': 'inline-block', 'float': 'left'}),
+                    'width': '12%',
+                    })
+                ],style={'width': '90%', 'display': 'inline-block', 'margin-bottom': '1%'}),
+            ], style={'width': '53%', 'display': 'inline-block', 'float': 'left'}),
         html.Br(),
-        html.Div([
+        html.Div([ # checklist
                 dcc.Checklist(
                     id='checklist',
                     options=checkboxes,
-                    value=['Long;n', 'Is BOPB;n', 'NoRm 2 HL;n', 'Mjr SR;n', '2nd PB Wkr;n', 'Mjr DP;n', 'DP;n', 'V Deep Val;n', 'Btwn EMAs;n', 'Touched EMA;n'],
+                    value=[],
                     labelStyle={'display': 'block', 'font-size': '12px'},
                     style={'column-count': '7', 'column-gap': '0px'}
                 )
-            ], style={'width': '45%', 'float': 'right', 'height': '80px', 'position': 'relative', 'margin-top': '-20px', 'right': '50px'}), #42px
+            ], style={'width': '45%', 'float': 'right', 'height': '80px', 'position': 'relative', 'margin-top': '-20px', 'right': '50px'})
         ], style={'display': 'inline-block', 'width': '100%'}),
     html.Div([ # bottom
         html.Div([ # main table / first column
@@ -451,12 +465,12 @@ app.layout = html.Div([
                     } for c in d.columns
                 ],
                 style_data_conditional=[]
-            )],id='table-div',style={'width': '32%', 'display': 'inline-block', 'float': 'left'}),
-        html.Div([ # last column
+            )],id='table-div',style={'width': '24%', 'display': 'inline-block', 'float': 'left'}),
+        html.Div([ # 2nd column
             html.Div([ # sl table
                 dash_table.DataTable(id='sl_table',
                     columns=[
-                        {"name": i, "id": i, "deletable": False, "selectable": False} for i in ['SL', 'wp', 'total']
+                        {"name": i, "id": i, "deletable": False, "selectable": False} for i in ['SL', 'wp', 'wins', 'total']
                     ],
                     data=[],
                     column_selectable="multi",
@@ -468,10 +482,10 @@ app.layout = html.Div([
                         {
                             'if': {'column_id': c},
                             'width': '10%'
-                        } for c in ['SL', 'wp', 'total']
+                        } for c in ['SL', 'wp', 'wins', 'total']
                     ],
                     style_data_conditional=[]
-                )], style={'width': '48%','position': 'relative', 'display': 'inline-block'}),
+                )], style={'width': '49%','position': 'relative', 'display': 'inline-block'}),
             html.Div([ # tp table
                 dash_table.DataTable(id='tp_table',
                     columns=[
@@ -490,7 +504,7 @@ app.layout = html.Div([
                         } for c in ['TP', '%', 'total']
                     ],
                     style_data_conditional=[]
-                )], style={'width': '48%','position': 'relative', 'left': '2%', 'display': 'inline-block'}),
+                )], style={'width': '49%','position': 'relative', 'left': '2%', 'display': 'inline-block'}),
             html.Div(style={'height': '20px'}),
             dash_table.DataTable(id='datatable-env', # env table
                 columns=[
@@ -512,7 +526,7 @@ app.layout = html.Div([
             html.Div([dcc.Dropdown(id='timeSelect', # time select
                     options=timeValues,
                     multi=True,
-                    value=[7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5]
+                    value=[7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11]
                 )],style={'width': '100%', 'display': 'inline-block', 'margin-top': '20px'}),
             dash_table.DataTable(id='datatable-time', # time table
                 columns=[
@@ -529,9 +543,11 @@ app.layout = html.Div([
                         'if': {'column_id': c},
                         'width': '10%'
                     } for c in timeStatsDF.columns
-                ],
-                style_data_conditional=[])],id='time-div',style={'width': '32%','position': 'relative', 'left': '1%', 'display': 'inline-block'}),
-    ])
+                ],style_data_conditional=[]),
+            ],id='time-div',style={'width': '26%','position': 'relative', 'margin-left': '1%', 'display': 'inline-block', 'overflow': 'hidden', 'top': '-14px'}),
+        html.Div(id='imgs', style={'width': '48%','position': 'relative', 'display': 'inline-block', 'float': 'right', 'height': '850px', 'overflow': 'scroll'}),
+        ]),
+    html.Div(id='placeholder')
 ])
 
 
@@ -549,24 +565,44 @@ app.layout = html.Div([
     dash.dependencies.Output("datatable-env", "data"),
     dash.dependencies.Output("sl_table", "data"),
     dash.dependencies.Output("tp_table", "data"),
+    dash.dependencies.Output("memory", "data"),
+    dash.dependencies.Output("info", "data"),
     ],
-    [dash.dependencies.Input("filterSelect", "value"),
-    dash.dependencies.Input("playSelect", "value"),
-    dash.dependencies.Input("filterSelect2", "value"),
-    dash.dependencies.Input("timeSelect", "value"),
-    dash.dependencies.Input("playSelect2", "value"),
-    dash.dependencies.Input("checklist", "value")])
-def update_table(search_value, play_val, search_value2, time_value, play_val2, checklist):
+    [dash.dependencies.Input('submit-button', 'n_clicks')],
+    [State("filterSelect", "value"),
+    State("playSelect", "value"),
+    State("timeSelect", "value"),
+    State("checklist", "value"),
+    State("numEntries", "value"),
+    State("ticker", "value"),
+    State("id-start", "value"),
+    State("id-end", "value")])
+
+def update_table(submit_click, search_value, play_val, time_value, checklist, numEntries, ticker, idstart, idend): 
     global df #Data (actual backtest data)
     global d_fresh #Stats
     global optionsArr # Array of options needed to update stats
     global timeStatsBackup # Zeroed out timeStatsDF
 
+
+
     # Make a copy of the ORIGINAL data
     d_fresh_copy = d_fresh.copy()
     dataCopy = df.copy()
-    dataCopy2 = df.copy() # for second filter, if necessary
     timeCopy = timeStatsBackup.copy()
+
+    if idstart is not None:
+        dataCopy = dataCopy[dataCopy['Id'] >= idstart]
+    if idend is not None:
+        dataCopy = dataCopy[dataCopy['Id'] <= idend]
+
+    if numEntries is None and numEntries != "":
+        numEntries = len(dataCopy.index)
+    
+    dataCopy = dataCopy.tail(numEntries)
+
+    if ticker is not None and ticker != "":
+        dataCopy = dataCopy[dataCopy['Stock'] == ticker.upper()]
 
 
     if play_val is not None:
@@ -581,12 +617,8 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
         else:
             dataCopy = dataCopy[dataCopy['Play'] == play_val]
 
-    if play_val2 is not None:
-        dataCopy2 = dataCopy2[dataCopy2['Play'] == play_val2]
-
     # Store the values from the multi-dropdown in a variable. No reason.
     valArr = search_value
-    valArr2 = search_value2
 
     if (valArr is None):
         newStats = d
@@ -594,12 +626,9 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
     # We got values in our multi-select, now we have to filter the data and return the updated data to the app
     else:
         values = []
-        values2 = []
         valuesCheckbox = []
         for val in valArr:
             values.append({"val": val[:val.find(';')], "checked": val[val.find(';')+1:]})
-        for val in valArr2:
-            values2.append({"val": val[:val.find(';')], "checked": val[val.find(';')+1:]})
         for val in checklist:
             valuesCheckbox.append({"val": val[:val.find(';')], "checked": val[val.find(';')+1:]})
 
@@ -617,31 +646,12 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
             elif i['checked'] == 'T':
                 dataCopy = dataCopy[dataCopy[i['val']]=="T"]
 
-        for i in values2:
-            if i['checked'] == 'y':
-                dataCopy2 = dataCopy2[dataCopy2[i['val']]==True]
-            elif i['checked'] == 'n':
-                dataCopy2 = dataCopy2[dataCopy2[i['val']]==False]
-            elif i['checked'] == 'R':
-                dataCopy2 = dataCopy2[dataCopy2[i['val']]=="R"]
-            elif i['checked'] == 'PB':
-                dataCopy2 = dataCopy2[dataCopy2[i['val']]=="PB"]
-            elif i['checked'] == 'T':
-                dataCopy2 = dataCopy2[dataCopy2[i['val']]=="T"]
-
         for i in valuesCheckbox:
             if i['checked'] == 'y':
                 dataCopy = dataCopy[dataCopy[i['val']]==True]
-                dataCopy2 = dataCopy2[dataCopy2[i['val']]==True]
             elif i['checked'] == 'n':
                 dataCopy = dataCopy[dataCopy[i['val']]==False]
-                dataCopy2 = dataCopy2[dataCopy2[i['val']]==False]
 
-
-        dataAll = pd.concat([dataCopy, dataCopy2], ignore_index=True).drop_duplicates()
-
-    if play_val2 is not None:
-        dataCopy = dataAll.copy()
 
     # Before sending the new data to the stats update function, we want to further filter it to only include the times which we selected
     if len(time_value) !=0:
@@ -664,14 +674,30 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
 
     envStats = newStats[newStats['name']=='env']
 
+    # store DF in storage
+    data_screenshots = dataCopy[[ 'Id', 'Scrn', 'Rec', 'Dates']]
+    mem = data_screenshots.to_dict('records')
+
+    info = str(play_val)
+    for i in search_value:
+        info = info + " + " + i
+
+
     ##### Get SL data #####
     slData = getSLData(dataCopy)
+    #print slData
 
     if slData['total'] != 0:
         wp_rec = '%.1f' % (float(slData['rec'])/float(slData['total'])*100)
-        wp_both = '%.1f' % (float(slData['both'])/float(slData['total'])*100)
-        wp_close = '%.1f' % (float(slData['closeema'])/float(slData['close_total'])*100)
-        wp_far = '%.1f' % (float(slData['farema'])/float(slData['far_total'])*100)
+        wp_both = '%.1f' % (float(slData['both'])/float(slData['total'])*100) 
+        if slData['close_total'] != 0:
+            wp_close = '%.1f' % (float(slData['closeema'])/float(slData['close_total'])*100)
+        else:
+            wp_close = 0.0
+        if slData['far_total'] != 0:
+            wp_far = '%.1f' % (float(slData['farema'])/float(slData['far_total'])*100)
+        else:
+            wp_far = 0.0
     else:
         wp_rec = 0.0
         wp_both = 0.0
@@ -681,6 +707,7 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
 
     sl_d = {
         'SL': ["Rec","Both", "Close", "Far"], 'wp': [wp_rec,wp_both, wp_close, wp_far], 
+        'wins':[int(slData['rec']), int(slData['both']), int(slData['closeema']), int(slData['farema'])],
         'total': [int(slData['total']), int(slData['total']), int(slData['close_total']), int(slData['far_total'])]
     } 
     sl_df = pd.DataFrame(data=sl_d)
@@ -718,9 +745,7 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
     
 
 
-    return newStats.to_dict('records'), timeStatsNew.to_dict('records'),envStats.to_dict('records'), sl_df.to_dict('records'), tp_df.to_dict('records')
-
-
+    return newStats.to_dict('records'), timeStatsNew.to_dict('records'),envStats.to_dict('records'), sl_df.to_dict('records'), tp_df.to_dict('records'), mem, info
 
 
 #            dP   dP                                              dP dP dP                         dP                
@@ -729,24 +754,35 @@ def update_table(search_value, play_val, search_value2, time_value, play_val2, c
 # 88'  `88   88   88'  `88 88ooood8 88'  `88    88'  `"" 88'  `88 88 88 88'  `88 88'  `88 88'  `"" 88888"   Y8ooooo. 
 # 88.  .88   88   88    88 88.  ... 88          88.  ... 88.  .88 88 88 88.  .88 88.  .88 88.  ... 88  `8b.       88 
 # `88888P'   dP   dP    dP `88888P' dP          `88888P' `88888P8 dP dP 88Y8888' `88888P8 `88888P' dP   `YP `88888P' 
-                                                                                                                   
-                                                                                                                   
-################# Reset Filters button #################
+
+
 @app.callback(
-    dash.dependencies.Output("filterSelect", 'value'),
-    [dash.dependencies.Input('reset-button', 'n_clicks')])
-def reset_filter(n_clicks):
-    return []
+    [dash.dependencies.Output("imgs", "children")],
+    [dash.dependencies.Input('screenshot-button', 'n_clicks')],
+    [State("memory", "data"), State("info", "data")])
+def reset_filter(scrn_btn, mem, info):
+    scrn_list = pd.DataFrame.from_dict(mem)
+
+    imgList = []
+    imgList.append(html.Div(info, style={ 'color': 'black', 'font-size': '26px', 'font-weight': 'bold'}))
+    for index, row in scrn_list.iterrows():
+        if row['Rec'] == True:
+            winStr = "Win"
+        else:
+            winStr = "Loss"
+        span = str(row['Id']) + "--" + str(winStr) + "--" + str(row['Dates']) + "--" + str(row['Scrn'])
+        imgList.append(html.A(href=row['Scrn'],target='_blank', children=(html.Img(src=row['Scrn'], style={'width':'98%'}))))
+        imgList.append(html.Span(span, style={'position': 'absolute', 'color': 'cyan', 'font-size': '26px', 'font-weight': 'bold', 'left': '0px', 'margin-top': '30px', 'margin-left': '5px'}))
+
+    return [imgList]
 
 
-################# Reset Filters button #################
-@app.callback(
-    [dash.dependencies.Output("filterSelect2", 'value'),
-    dash.dependencies.Output("playSelect2", 'value')],
-    [dash.dependencies.Input('reset-button2', 'n_clicks')])
-def reset_filter(n_clicks):
-    return [],None
-
+# ################# Clear Num Entries #################
+# @app.callback(
+#     dash.dependencies.Output("numEntries", "value"),
+#     [Input('clear-numEntries', 'n_clicks')])
+# def reset_filter(n_clicks):
+#     return None
 
 ################# Reset Checkboxes button #################
 @app.callback(
@@ -754,8 +790,6 @@ def reset_filter(n_clicks):
     [dash.dependencies.Input('checkbox-button', 'n_clicks')])
 def reset_filter(n_clicks):
     return []
-    #return ['Long;n', 'Is BOPB;n', 'NoRm 2 HL;n', 'Mjr SR;n', '2nd PB Wkr;n', 'Mjr DP;n', 'DP;n', 'V Deep Val;n', 'Btwn EMAs;n', 'Touched EMA;n']
-
 
 #############################################################
 ############ Main Table Cell Click Callback #################
