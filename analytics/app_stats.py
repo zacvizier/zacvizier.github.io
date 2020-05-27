@@ -13,6 +13,18 @@ stats = [
             {"checked": 'PB', "w": 0, "l": 0}]
     },
     {
+        "name": "day",
+        "val": "Day",
+        "checkedOptions": [{'dataVal': 'M', 'val': 'M'}, {'dataVal': 'T', 'val': 'T'}, {'dataVal': 'W', 'val': 'W'}, {'dataVal': 'Th', 'val': 'Th'}, {'dataVal': 'F', 'val': 'F'}, {'dataVal': 'NA', 'val': 'NA'}],
+        "data": [
+            {"checked": 'M', "w": 0, "l": 0},
+            {"checked": 'T', "w": 0, "l": 0},
+            {"checked": 'W', "w": 0, "l": 0},
+            {"checked": 'Th', "w": 0, "l": 0},
+            {"checked": 'F', "w": 0, "l": 0},
+            {"checked": 'NA', "w": 0, "l": 0},]
+    },
+    {
         "name": "strmv",
         "val": "StrMv",
         "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
@@ -320,13 +332,77 @@ stats = [
             {"checked": 'n', "w": 0, "l": 0}]
     },
     {
-        "name": "v deep val",
-        "val": "V Deep Val",
+        "name": "tp be",
+        "val": "TP BE",
         "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
         "data": [
             {"checked": 'y', "w": 0, "l": 0},
             {"checked": 'n', "w": 0, "l": 0}]
-    }
+    },
+    {
+        "name": "1.5x",
+        "val": "1.5x",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
+    {
+        "name": "2x",
+        "val": "2x",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
+    {
+        "name": "3x",
+        "val": "3x+",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
+    {
+        "name": "unk",
+        "val": "Unk",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
+    {
+        "name": "livew",
+        "val": "Live W",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
+    {
+        "name": "livel",
+        "val": "Live L",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
+    {
+        "name": "miss",
+        "val": "Miss",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
+    {
+        "name": "rec",
+        "val": "Rec",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
     # {
     #     "name": "imrej",
     #     "val": "ImRej",

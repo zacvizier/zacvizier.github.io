@@ -1,0 +1,79 @@
+Instructions for oauth td ameritrade:
+
+1. use this auth URL to get code
+
+https://auth.tdameritrade.com/auth?response_type=code&redirect_uri=http://localhost&client_id=0FPWBRY9EDFIPNAXAUSP0QALJC9T5WTP%40AMER.OAUTHAP
+
+this is response:
+https://localhost/?code=cObMCcCfgrVbKpz%2BffEIUcLQhtbES%2BpGknEYa5KLuyNK3NnQOi4lZ42%2BmjApGjWCA4bc4H5KIhlO3j57PBSQVe1ACvUqPH07SibCAyD8SFuA8xiRPzMse82ZRWnifCT3vR2GysRJZzxrT31o2CMP5MuGikp7lHog%2FXq7POz5ZheKEkpvjHClLcFiagnlKmevfTBGglJSOzm%2BOsZ14pp9wljUtQyr3dETpbxXBu3MxF%2Brv%2FJZZfjW1QgjlWLy4yDyvyVkMISX8vTYCb%2FAl586l8S%2FzQRBIsw4oUDtlDmtX2L8Ed7pk3nZwL%2F7pi1gEtVf1a7wEj87yI3dW4T2P0c1KCRYPTcKUNR%2FTlQF%2BpN7aMSdvSiVq2E0XZFgAyNI8uZUPEFPAwUUNLsqCmjeeg50dB9LU%2FPmVBlefAZK8w22c5pXovHu%2BLg1qeV2zhZ100MQuG4LYrgoVi%2FJHHvlzbHhfaakcQw10kycWOD8MCuZFlmo2PAtm1Hi10JilVyy%2B86eyeTzAT7F9pI%2Bw%2FkCKn1rt7wNXKxUKmKb%2Bwm%2Fe9kl5Ej7ZywFd8u%2B5Pqn8jq%2FnAy8YtqOu2%2B4QbaYeYVtWoY01CoLNAsp%2Fg9yEl6NUCBosdBOBJ4sIDgwCWENplMJw8Mqd%2BudY4XdfYAOYw6NjBGkwnuLpLPwmyiQkZQACrS4OiJRIj%2B%2FLsBO1Ij5PHgReYh%2BW6vXmFUwYdQBZXhZ7KuKtrCr9IHQqOK6tHrD0CHeDk0SzNqIeCWFRrYmtJ6DBe%2FFQtLsoBJtE0Dd073hCfdt21EUB3yB0wsHlvGi%2BaTpk%2Fh%2FfLDul8nfjNkmHOAXpqf34Pvn7JF1Fg4apYpHCk4bbKum8y%2Bdz9gwFMqaTwlxpXeo5fA%2B420paOThEP%2F6T5I3Hh3Q9%2Bmy8qI%3D212FD3x19z9sWBHDJACbC00B75E
+
+Extract the code (after code=)
+url decode it
+
+plug code in here with grand_type = code, access type offline to get refresh token, client it is in website, redirect uri exactly what was set when setting up app
+
+Try it here: https://developer.tdameritrade.com/authentication/apis/post/token-0
+
+ex client_id: 0FPWBRY9EDFIPNAXAUSP0QALJC9T5WTP    
+ex redirect_uri: http://localhost
+list of all apps: https://developer.tdameritrade.com/user/me/apps
+
+example response
+{
+  "access_token": "yDNX/Apt5efeDoFPzGhW/2yeumjlnNh/cDPSYh/bwA5nd5Ltm800ispn1J4iiAfUgYiQQ1wRJFjL016Nv6UTheW962CFLrjIHG916IsIgm4o36+rd3VRSS3PTEC+y55+hVSlOtrk5ipdHlTVY/l0OVomSadZ+vuOemXeU3oQtr3oZvqGO95KaDYc997UoSuDBtcrH/WQQhsa4rzYobCxC+nVIQKLjIUg7ZQCYIACK9tNf8j0c6canw4juqZsq8yzd2zlzxvUNwNGmb+j5YgtWmXcgQJQq9IKIAl8itcs/U4UooWEmhWG2/kNxCEvBb0IsCFUt/Y1o48ckH+yAxKk4NqqMGCXtjvrHh0JV1wQL8XN4cbMh0bXgCgCyFCtQ8vpKXm7G2C8uSIHFsPn+MNT/4YbTaUlE50rIkYkja/Ut+ZqHjFis+nQEcXhso2X/EJl31PnXoJR3wtFnRt9sqc4TVtpEBDWowggwuVqpckJeQZbSNrc04H+1PtQwP0HwYvTPAEjZAcmHbbkCYFd9AYkgWg+Sy+PJkj4KsZwfuXbUyZdDHFcE100MQuG4LYrgoVi/JHHvlQG6W04/OJvUYFDlT3dJOW7lDhPdph+YnLCh39pN7zkUCdrcIzc462f6+9FzxkU7OFcaXhoalegqxtt8hJCuVX1ToDg8O0FJ9HKO/9oXcFj1D2y87BSbyfmxyt+NyHWpJTtshvrrmi221uUtslBgsw0f18SfkgAZuN5pzS5rVzIGe/DkUYA35iSdLb37YttbK8UsthbLkdYB4l0bU85m8PrGTF5uSBSh0qOzo7m61Xp0b1RNliP2bMgsRuSR8cjKuydkPv/OcVlr0q1wIRAVbhI32ubW+lLwz/eKSktZ98iI8hYXSQgRQcJoOGhDeUmbG5V/hThMmmtX9ktkKi7puDMpQntf2KNy6Gm7XajXq2mxnJzPVntkctqFq2lL5WpOqTwFVayrheAJTKTQIMMEbuf3oH8lmjLW/RC6xyrYDLOd8Dc9qOj9mo/2LGRXNZTVHmBsDs9jj+A0gU0VoAFYFsvQ+dJowPU+hsjyJgUTNhzy2Rku1fH9N2SDP52IlRmMzkadYyX70ZowCjXMcv1CoZXe049vu80KoHx6+R4/FEaMUTqyQ==212FD3x19z9sWBHDJACbC00B75E",
+  "refresh_token": "rsM7ceE5fdqnU5rh+dWHDhWDvfYgFE8/urlhhLuJq0JLz5hTmszmviHgNDaogaDqxjKXg2MAUwCZ7WvUBb1FVIVOian+0pCsVil2LwnjCn2qwGSaAS3JzYbzhnK1dKvXy0SfeHN/UJZsFkotYeKR8s+8S1Z9+BhbCconGRG4e1O/8NyA6B7KlAzY2YZoumaR7bTmQY5ObDpMWQ7W7txY3V9A+r4+gN0rp7jPooScf/1PjoWl9ycyfmXrfV3ko7+D3VyMRxMro23kBNTcUv2EPAX5A2dsGZdyqUtDIpXpuY6i6+Pet+8XjbYZkV22zfD3ljHnHNteeQTGyCvM4fR9hrwa28UEL/veHElQtgcJSZvu7TVW6f7VRrzpremoW0IUH0dG3r8KSOExpmBxjQoYeKfthDg/xVrMhwNNeQTfAbgYIWQI20tGcS41dVL100MQuG4LYrgoVi/JHHvlRJWF0CrQt2GTSBJpaABn1xKKVmndQs5PP5E0YXpes0jq2zc/niiCfSlHZOKM9lqHIZ6MqF1rULpcvShTtzO80gryFEjhqOX8H0vhOukWMTS6Vf/boFuzFr1TDSqEGVKxvsCi6/oEN9foOTDL6HvgAX7O+WYopEBWxjwSaG7yUDxpXG5u8qJijg3nBmmEBwuRqmiHUqD0uPaiYPALttW9TCtBxrP1p0WeS7dS9GpgxUl7zagjSC1fycOwtfo93WlXQwKMS52UR7WMDZBAwJ5ZnPSp4h4p3iq+NGMCmyI7HvL9I5pxCY/QpqrQ81UWOM27xw7xr1dwwCJVTM/JDkLoqbu6+HEt9DUxxhKYG+EMTMaHSKdrWYmxPup3iPvd097sDkcnGmai2obzsMX1yLSsxHV4SaQ8LAwtu8jqO6rLQ7ogkcOnk8z8tKfNAaw=212FD3x19z9sWBHDJACbC00B75E",
+  "scope": "PlaceTrades AccountAccess MoveMoney",
+  "expires_in": 1800,
+  "refresh_token_expires_in": 7776000,
+  "token_type": "Bearer"
+}
+
+future responses only need refresh token  and NO offline so i dont get a new refresh token. 
+
+
+
+
+Price History:
+
+https://developer.tdameritrade.com/price-history/apis/get/marketdata/%7Bsymbol%7D/pricehistory#
+
+in URL, put the stock ticker
+https://api.tdameritrade.com/v1/marketdata/AAPL/pricehistory
+required:
+    api key 
+    periodType ("day")
+    period (1 - # of days back to go)
+    frequencyType: minute
+    frequency: 1
+    needExtendedHoursData: false
++oauth stuff = Header: Authorization: Bearer (access_token)
+
+ex curl:
+curl -X GET --header "Authorization: " --header "Authorization: Bearer y+2HLET6MDGtzvMCC9moQT+HZiqSdElv5V7rjPmJc1GG9FNexo2hVGTFYUytWDiGbAtWcis3du/8Il1dIqznDIe4hnOqqpNrnd1ciptUmpZE/5gb8vgo+qjXixt/V9LegSEfN3gR6WF/Ovs43QmTNEVVQ0hk4yxpzYn8KVAS0Iadp5a3FkJbr5v1wyzRsS0aeIx+GbCuMU9i1sCPgUiagP6HWHm0Cnv3XJIc3ZYYDtf6LjhIPYjnfs1mNsARJjR0Fnl/AHvE8wtitrKXS+69qwGGyJWSBNMv6w7LoijBwqwOWrC7C04Gb1ywkDIK3+R6JkSemrkb2ep3k6Y8YT60oecq+cV7UzMGobyveZh4PpUyv6oaf8SIQx4No6PylM2+2/jkOEZczevDPPii3DafRngVsygISIWVfAHO4TNbjIt1WbiPGEBvGxt3rQAmMqviFz5G+HjvQ2NYolcKHUR0hmK3nO9m/FNE0J9o8+cJk1+mPgEuds3QQqfSVov85EwIxsBLrrR1eUjhQcQHhy2TzpuHcLxNMfZdizmxn100MQuG4LYrgoVi/JHHvlB947Tr5D/FnKwBKYdnh7svjuQ9MAikjpDSLLrmW/pjbTTwIqE6UGoJJOKI9X4ERhCKIE9XIMa+NSPfmduRZ8UdpxixFEEL7q/pNvmV2xeuUgMNaEHf6iQgyifkLal3eeXAUoo3Gt1/pC9UDTvaxAMSgGRfqd4p1xDt8fYlNvgmUBsnTxIBYLyH6XwtoqRFKNyZhr7jWX0jTXPIdhuq+vSAshFJf4mrCq+Xt0fs8NwoJiT81jNem5/vztfENO+CViudY7o8tZNdeYWKNuFVZ2sAUfqGc/+0jxmv3R5TRGe7gj6c+mHmQJDpHdu/6+LCbfrIU+vqKtpultrPahWZNa99qNERCiCD4cJkgjiAIC1BSc3KByKw0g/rOXauFOw1ipkBIojBcY2HBpvGsu6tEv290wq38Hl0xiOl5KewprcIlG7W6kIXiqqJkRwvDS505/4smtGZZ6HODXEToQZYUQ139qkn80G1QZNA3uymEgKlhccaPLXkjYeIn7BVotGIQo/bxBTyjgG+IUXAxt0nP3AzCUotGhbMPOaewKBb212FD3x19z9sWBHDJACbC00B75E" "https://api.tdameritrade.com/v1/marketdata/AAPL/pricehistory?apikey=0FPWBRY9EDFIPNAXAUSP0QALJC9T5WTP&periodType=day&period=1&frequencyType=minute&frequency=1&needExtendedHoursData=false"
+
+ex response:
+{
+  "candles": [
+    {
+      "open": 305.64,
+      "high": 306.14,
+      "low": 305.4,
+      "close": 305.895,
+      "volume": 597044,
+      "datetime": 1588944600000
+    },
+    {
+      "open": 305.86,
+      "high": 305.895,
+      "low": 305.3,
+      "close": 305.4971,
+      "volume": 154462,
+      "datetime": 1588944660000
+    }, ...
+
+
+Python:
+
+possibly use ta-lib (api for candles/technical analysis): https://github.com/mrjbq7/ta-lib
+
+possibly follow this guide to detect double bottom and engineer it give us what we want https://medium.com/automation-generation/algorithmically-detecting-and-trading-technical-chart-patterns-with-python-c577b3a396ed 

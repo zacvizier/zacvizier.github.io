@@ -305,8 +305,6 @@ checkboxes = [
                 {'label': 'Mjr DP N', 'value': 'Mjr DP;n'},
                 {'label': 'DP Y', 'value': 'DP;y'},
                 {'label': 'DP N', 'value': 'DP;n'},
-                {'label': 'V Deep Y', 'value': 'V Deep Val;y'},
-                {'label': 'V Deep N', 'value': 'V Deep Val;n'},
                 {'label': 'Btwn Y', 'value': 'Btwn EMAs;y'},
                 {'label': 'Btwn N', 'value': 'Btwn EMAs;n'},
                 {'label': 'Touched Y', 'value': 'Touched EMA;y'},
@@ -396,7 +394,7 @@ app.layout = html.Div([
                             'position': 'relative',
                         }),
                         ], style={'position': 'absolute','display': 'inline-block'})
-                ],style={'width': '95%', 'display': 'inline-block'}), 
+                ],style={'width': '90%', 'display': 'inline-block'}), 
             html.Div([ #btns
                 html.Button('Submit', id='submit-button', style={
                     "box-shadow":"inset 0px 1px 0px 0px #a6e7ff",
@@ -421,6 +419,17 @@ app.layout = html.Div([
                     'width': '32%',
                     }),
                 html.Button('Clear', id='checkbox-button', style={
+                    "box-shadow":"inset 0px 1px 0px 0px #fc77d7",
+                    "background":"linear-gradient(to bottom, #fc77d7 5%, #7a175e 100%)",
+                    "border-radius":"6px",
+                    "border":"1px solid #fc77d7",
+                    "color":"#ffffff",
+                    'margin-left': '2%',
+                    'font-size': '20px',
+                    'height': '35px',
+                    'width': '12%',
+                    }),
+                html.Button('Set Time', id='time-button', style={
                     "box-shadow":"inset 0px 1px 0px 0px #fc77d7",
                     "background":"linear-gradient(to bottom, #fc77d7 5%, #7a175e 100%)",
                     "border-radius":"6px",
@@ -790,6 +799,15 @@ def reset_filter(scrn_btn, mem, info):
     [dash.dependencies.Input('checkbox-button', 'n_clicks')])
 def reset_filter(n_clicks):
     return []
+
+
+################# Reset Time button #################
+@app.callback(
+    dash.dependencies.Output("timeSelect", "value"),
+    [dash.dependencies.Input('time-button', 'n_clicks')])
+def reset_filter(n_clicks):
+    return [7,7.5,8,8.5,9,9.5,10,10.5,11]
+
 
 #############################################################
 ############ Main Table Cell Click Callback #################
