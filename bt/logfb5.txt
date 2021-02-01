@@ -1,0 +1,48 @@
+In Bull Entry: 10/7/2020 11:53
+SL hit1 10/7/2020 12:28
+In Bull Entry: 10/8/2020 7:06
+TP hit1 10/8/2020 7:11
+In Bull Entry: 10/8/2020 7:32
+TP hit1 10/8/2020 8:14
+In Bull Entry: 10/8/2020 8:36
+TP hit1 10/8/2020 8:57
+In Bull Entry: 10/8/2020 9:32
+SL hit1 10/8/2020 10:11
+In Bull Entry: 10/8/2020 12:37
+SL hit1 10/8/2020 12:50
+In Bull Entry: 10/9/2020 8:05
+SL hit1 10/9/2020 8:08
+In Bull Entry: 10/9/2020 8:46
+SL hit1 10/9/2020 8:52
+In Bull Entry: 10/9/2020 9:22
+SL hit1 10/9/2020 9:26
+In Bull Entry: 10/9/2020 11:30
+SL hit1 10/9/2020 11:39
+In Bull Entry: 10/12/2020 7:04
+TP hit1 10/12/2020 7:23
+in here 1 - 272.8762 --- 272.83
+in here 2
+In Bull Entry: 10/12/2020 8:26
+TP hit1 10/12/2020 8:38
+In Bull Entry: 10/12/2020 8:59
+TP hit1 10/12/2020 9:05
+In Bull Entry: 10/12/2020 9:40
+TP hit1 10/12/2020 9:42
+In Bull Entry: 10/12/2020 10:14
+TP hit1 10/12/2020 10:23
+In Bull Entry: 10/12/2020 10:55
+SL hit1 10/12/2020 11:43
+In Bull Entry: 10/12/2020 11:47
+SL hit1 10/12/2020 11:57
+In Bear Entry: 10/13/2020 6:54
+SL hit1 10/13/2020 7:20
+In Bear Entry: 10/13/2020 7:33
+SL hit1 10/13/2020 7:44
+In Bear Entry: 10/13/2020 10:55
+TP hit1 10/13/2020 10:56
+In Bear Entry: 10/13/2020 11:30
+SL hit1 10/13/2020 12:03
+In Bull Entry: 10/14/2020 6:53
+SL hit1 10/14/2020 6:55
+In Bear Entry: 10/14/2020 8:39
+TP hit1 10/14/2020 8:45

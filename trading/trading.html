@@ -8,35 +8,35 @@
 
     <h1 >Position Size Calculator</h1>
 
-    Account Size: <input type="number" id="acctSize" value=50000><br>
-    % of Account risk: <input type="number" id="risk" value=0.1><br><br><br>
-    Rough stock price: <input type="number" id="stockPrice"><br><br><br>
+    <!-- Account Size: <input type="number" id="acctSize" value=50000><br> -->
+    Risk value in dollars: <input type="number" id="risk" value=20><br><br><br>
+    <!-- Rough stock price: <input type="number" id="stockPrice"><br><br><br> -->
     SL in dollars: <input type="number" id="SL" value=0.3><br><br>
 
     <button onclick="calculate()">Calculate</button> <button onclick="clearData()">Clear</button> <br><br><br>
     Number of shares to buy: <div style="font-size: 20px; font-weight: bold;" id="numSharesToBuy"></div>
-    Total cost: <div style="font-size: 20px; font-weight: bold;" id="totalCost"></div>
+    <!-- Total cost: <div style="font-size: 20px; font-weight: bold;" id="totalCost"></div> -->
 
     
     <script>
         function calculate() { 
-            var acctSize=document.getElementById("acctSize").value
-            var risk = document.getElementById("risk").value/100
+            // var acctSize=document.getElementById("acctSize").value
+            var risk = document.getElementById("risk").value
             var sl = document.getElementById("SL").value
-            var numShares = (acctSize * risk)/sl
+            var numShares = (risk)/sl
             var numSharesRounded = Math.round(numShares)
             document.getElementById('numSharesToBuy').innerHTML = numSharesRounded
-            document.getElementById('totalCost').innerHTML = "$" + Math.round((numSharesRounded * document.getElementById("stockPrice").value) * 100) / 100
+            // document.getElementById('totalCost').innerHTML = "$" + Math.round((numSharesRounded * document.getElementById("stockPrice").value) * 100) / 100
         }
 
         function clearData() {
-          document.getElementById("acctSize").value = 50000
-          document.getElementById("risk").value = 0.1
-          document.getElementById("SL").value = 0.3
-          document.getElementById("stockPrice").value = null
+          // document.getElementById("acctSize").value = 50000
+          document.getElementById("risk").value = 20
+          document.getElementById("SL").value = null
+          // document.getElementById("stockPrice").value = null
 
           document.getElementById('numSharesToBuy').innerHTML = null
-          document.getElementById('totalCost').innerHTML = null
+          // document.getElementById('totalCost').innerHTML = null
         }
 
     </script>

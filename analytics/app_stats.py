@@ -76,6 +76,14 @@ stats = [
             {"checked": 'n', "w": 0, "l": 0}]
     },
     {
+        "name": "bad day",
+        "val": "Bad Day",
+        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+        "data": [
+            {"checked": 'y', "w": 0, "l": 0},
+            {"checked": 'n', "w": 0, "l": 0}]
+    },
+    {
         "name": "dp",
         "val": "DP",
         "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
@@ -123,14 +131,14 @@ stats = [
             {"checked": 'y', "w": 0, "l": 0},
             {"checked": 'n', "w": 0, "l": 0}]
     },
-    {
-        "name": "trpb2",
-        "val": "Tr PB 2",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
+    # {
+    #     "name": "trpb2",
+    #     "val": "Tr PB 2",
+    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+    #     "data": [
+    #         {"checked": 'y', "w": 0, "l": 0},
+    #         {"checked": 'n', "w": 0, "l": 0}]
+    # },
     {
         "name": "imppb1",
         "val": "Imp PB 1",
@@ -219,14 +227,14 @@ stats = [
             {"checked": 'y', "w": 0, "l": 0},
             {"checked": 'n', "w": 0, "l": 0}]
     },
-    {
-        "name": "1pbwkr",
-        "val": "1st PB Wkr",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
+    # {
+    #     "name": "1pbwkr",
+    #     "val": "1st PB Wkr",
+    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+    #     "data": [
+    #         {"checked": 'y', "w": 0, "l": 0},
+    #         {"checked": 'n', "w": 0, "l": 0}]
+    # },
     {
         "name": "2pbwkr",
         "val": "2nd PB Wkr",
@@ -315,22 +323,22 @@ stats = [
             {"checked": 'y', "w": 0, "l": 0},
             {"checked": 'n', "w": 0, "l": 0}]
     },
-    {
-        "name": "touched ema",
-        "val": "Touched EMA",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
-    {
-        "name": "mjr dp",
-        "val": "Mjr DP",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
+    # {
+    #     "name": "touched ema",
+    #     "val": "Touched EMA",
+    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+    #     "data": [
+    #         {"checked": 'y', "w": 0, "l": 0},
+    #         {"checked": 'n', "w": 0, "l": 0}]
+    # },
+    # {
+    #     "name": "mjr dp",
+    #     "val": "Mjr DP",
+    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+    #     "data": [
+    #         {"checked": 'y', "w": 0, "l": 0},
+    #         {"checked": 'n', "w": 0, "l": 0}]
+    # },
     {
         "name": "tp be",
         "val": "TP BE",
@@ -395,14 +403,14 @@ stats = [
             {"checked": 'y', "w": 0, "l": 0},
             {"checked": 'n', "w": 0, "l": 0}]
     },
-    {
-        "name": "rec",
-        "val": "Rec",
-        "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
-        "data": [
-            {"checked": 'y', "w": 0, "l": 0},
-            {"checked": 'n', "w": 0, "l": 0}]
-    },
+    # {
+    #     "name": "rec",
+    #     "val": "Rec",
+    #     "checkedOptions": [{'dataVal': True, 'val': 'y'}, {'dataVal': False, 'val': 'n'}],
+    #     "data": [
+    #         {"checked": 'y', "w": 0, "l": 0},
+    #         {"checked": 'n', "w": 0, "l": 0}]
+    # },
     # {
     #     "name": "imrej",
     #     "val": "ImRej",

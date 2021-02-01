@@ -29,10 +29,13 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
                                                                                                  
 
 # Load data from csv
-       #prod
-df1 = pd.read_csv('https://docs.google.com/spreadsheets/d/1VYoIhAj2MyZIWr72o-Ix2Rd1mHN_NVC5tTF6oUYNPUU/export?format=csv')
-       #dev
+        # prod
+# df1 = pd.read_csv('https://docs.google.com/spreadsheets/d/1VYoIhAj2MyZIWr72o-Ix2Rd1mHN_NVC5tTF6oUYNPUU/export?format=csv')
+        # dev
 # df1 = pd.read_csv("https://docs.google.com/spreadsheets/d/1VYoIhAj2MyZIWr72o-Ix2Rd1mHN_NVC5tTF6oUYNPUU/export?format=csv&id=1VYoIhAj2MyZIWr72o-Ix2Rd1mHN_NVC5tTF6oUYNPUU&gid=542337929")
+        # BT Log 3.0 Prod
+df1 = pd.read_csv('https://docs.google.com/spreadsheets/d/1UXV7iv7_bFgWMktRPich9Z-FcHCq4IXX7HKI5prUNto/export?format=csv')
+
 
 # Filter only rows with a valid Id
 df = df1[(df1['Id'] > 0)]
@@ -120,7 +123,8 @@ d_fresh = d.copy()
                                                                                                    
 def fill_time_arr(timeStatsDF, df):
     for index, row in df.iterrows():
-        if row['Res'] == 'W' and row['Rec'] == True:
+        #if row['Res'] == 'W' and row['Rec'] == True:
+        if row['Res'] == 'W':
             timeStatsDF.at[timeStatsDF[timeStatsDF['val']==row['Time']].index[0], 'w'] += 1
         else:
             timeStatsDF.at[timeStatsDF[timeStatsDF['val']==row['Time']].index[0], 'l'] += 1
@@ -156,7 +160,8 @@ def fill_stats_arr(dataStats, df, optionsArr):
             position = dataStats[condVector].index[0]
             for index, row in df.iterrows(): # Iterate through every item in the BT Data
                 if row[rowStats['val']] == i['dataVal']: # If that option matches the BT data...
-                    if row['Res'] == 'W' and row['Rec'] == True: # Depending on whether it was a Win or Loss, increment
+                    #if row['Res'] == 'W' and row['Rec'] == True: # Depending on whether it was a Win or Loss, increment
+                    if row['Res'] == 'W':
                         dataStats.iat[position, 3] += 1
                     else:
                         dataStats.iat[position, 4] += 1
@@ -200,7 +205,8 @@ def fill_stats_arr(dataStats, df, optionsArr):
 def calculateWinPTotal(data):
     numWins = 0
     for index, row in data.iterrows():
-        if row['Res'] == 'W' and row['Rec'] == True:
+        #if row['Res'] == 'W' and row['Rec'] == True:
+        if row['Res'] == 'W':
             numWins += 1
         
     decimal.getcontext().prec = 4 # 4 digits of precision (INCLUDING digits before the decimal
@@ -236,39 +242,37 @@ def getTPData(data):
     return tpNumbers       
 
 def getSLData(data):
-    slData = {'rec': 0, 'both': 0, 'closeema': 0, 'farema': 0, 'close_total': 0, 'far_total': 0, 'total': 0}
+    #slData = {'rec': 0, 'both': 0, 'closeema': 0, 'farema': 0, 'close_total': 0, 'far_total': 0, 'total': 0}
+    slData = {'rec': 0, 'total': 0}
     for index, row in data.iterrows():
-        if row['Rec'] == True:
+        #if row['Rec'] == True:
+        if row['Res'] == 'W':
             slData['rec'] += 1
-        if row['Both'] == True:
-            slData['both'] += 1
-        if row['Close EMA'] == 'W':
-            slData['closeema'] += 1
-        if row['Close EMA'] != 'N':
-            slData['close_total'] += 1
-        if row['Far EMA'] == 'W':
-            slData['farema'] += 1
-        if row['Far EMA'] != 'N':
-            slData['far_total'] += 1
+        # if row['Both'] == True:
+        #     slData['both'] += 1
+        # if row['Close EMA'] == 'W':
+        #     slData['closeema'] += 1
+        # if row['Close EMA'] != 'N':
+        #     slData['close_total'] += 1
+        # if row['Far EMA'] == 'W':
+        #     slData['farema'] += 1
+        # if row['Far EMA'] != 'N':
+        #     slData['far_total'] += 1
     slData['total'] = len(data.index)
 
     if len(data.index) != 0:
         wp_rec = '%.1f' % (float(slData['rec'])/float(len(data.index))*100)
-        wp_both = '%.1f' % (float(slData['both'])/float(len(data.index))*100)
-        wp_close = '%.1f' % (float(slData['closeema'])/float(len(data.index))*100)
-        wp_far = '%.1f' % (float(slData['farema'])/float(len(data.index))*100)
+        # wp_both = '%.1f' % (float(slData['both'])/float(len(data.index))*100)
+        # wp_close = '%.1f' % (float(slData['closeema'])/float(len(data.index))*100)
+        # wp_far = '%.1f' % (float(slData['farema'])/float(len(data.index))*100)
     else:
         wp_rec = 0.0
-        wp_both = 0.0
-        wp_close = 0.0
-        wp_far = 0.0
+        # wp_both = 0.0
+        # wp_close = 0.0
+        # wp_far = 0.0
     
     return slData
 
-
-    #res_sl = "Both: " + str(slData['both']) + " (" + str(wp_both) + "%)  ---  Close EMA: " + str(slData['closeema']) + " (" + str(wp_close) + "%)  ---  Far EMA: " + str(slData['farema']) + " (" + str(wp_far) + "%)"
-
-    #return res_sl
 
 
 # 88d888b. 88d888b. .d8888b.          88 .d8888b. dP    dP .d8888b. dP    dP d8888P 
@@ -684,7 +688,7 @@ def update_table(submit_click, search_value, play_val, time_value, checklist, nu
     envStats = newStats[newStats['name']=='env']
 
     # store DF in storage
-    data_screenshots = dataCopy[[ 'Id', 'Scrn', 'Rec', 'Dates']]
+    data_screenshots = dataCopy[[ 'Id', 'Scrn', 'Rec', 'Res', 'Dates']]
     mem = data_screenshots.to_dict('records')
 
     info = str(play_val)
@@ -698,26 +702,31 @@ def update_table(submit_click, search_value, play_val, time_value, checklist, nu
 
     if slData['total'] != 0:
         wp_rec = '%.1f' % (float(slData['rec'])/float(slData['total'])*100)
-        wp_both = '%.1f' % (float(slData['both'])/float(slData['total'])*100) 
-        if slData['close_total'] != 0:
-            wp_close = '%.1f' % (float(slData['closeema'])/float(slData['close_total'])*100)
-        else:
-            wp_close = 0.0
-        if slData['far_total'] != 0:
-            wp_far = '%.1f' % (float(slData['farema'])/float(slData['far_total'])*100)
-        else:
-            wp_far = 0.0
+        # wp_both = '%.1f' % (float(slData['both'])/float(slData['total'])*100) 
+        # if slData['close_total'] != 0:
+        #     wp_close = '%.1f' % (float(slData['closeema'])/float(slData['close_total'])*100)
+        # else:
+        #     wp_close = 0.0
+        # if slData['far_total'] != 0:
+        #     wp_far = '%.1f' % (float(slData['farema'])/float(slData['far_total'])*100)
+        # else:
+        #     wp_far = 0.0
     else:
         wp_rec = 0.0
-        wp_both = 0.0
-        wp_close = 0.0
-        wp_far = 0.0
+        # wp_both = 0.0
+        # wp_close = 0.0
+        # wp_far = 0.0
 
 
+    # sl_d = {
+    #     'SL': ["Rec","Both", "Close", "Far"], 'wp': [wp_rec,wp_both, wp_close, wp_far], 
+    #     'wins':[int(slData['rec']), int(slData['both']), int(slData['closeema']), int(slData['farema'])],
+    #     'total': [int(slData['total']), int(slData['total']), int(slData['close_total']), int(slData['far_total'])]
+    # } 
     sl_d = {
-        'SL': ["Rec","Both", "Close", "Far"], 'wp': [wp_rec,wp_both, wp_close, wp_far], 
-        'wins':[int(slData['rec']), int(slData['both']), int(slData['closeema']), int(slData['farema'])],
-        'total': [int(slData['total']), int(slData['total']), int(slData['close_total']), int(slData['far_total'])]
+        'SL': ["Rec"], 'wp': [wp_rec], 
+        'wins':[int(slData['rec'])],
+        'total': [int(slData['total'])]
     } 
     sl_df = pd.DataFrame(data=sl_d)
 
@@ -775,7 +784,8 @@ def reset_filter(scrn_btn, mem, info):
     imgList = []
     imgList.append(html.Div(info, style={ 'color': 'black', 'font-size': '26px', 'font-weight': 'bold'}))
     for index, row in scrn_list.iterrows():
-        if row['Rec'] == True:
+        #if row['Rec'] == True:
+        if row['Res'] == 'W':
             winStr = "Win"
         else:
             winStr = "Loss"
